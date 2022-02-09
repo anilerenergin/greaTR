@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "505205446847",
+    "project_id": "greatr-ca5f3",
+    "storage_bucket": "greatr-ca5f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:505205446847:android:79f25de7a70c7c5da24e0a",
+        "android_client_info": {
+          "package_name": "com.example.greatr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "505205446847-vp4sri7umpn2ah6dpfc3dvvhcu8rcesf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArnsbR2Mb2Xip6BHXGrZzF16RZ7g7xTQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "505205446847-vp4sri7umpn2ah6dpfc3dvvhcu8rcesf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "505205446847-obmnr8ln7ujk9rcbbm3vlo92m10cdlsg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.greatr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
