@@ -450,7 +450,7 @@ class _SingleCompanyState extends State<SingleCompany> {
           color: Colors.blue,
           size: width / 10,
         );
-      case 'İnternet Sitesi':
+      case 'Website':
         return Icon(
           FontAwesomeIcons.globe,
           color: Colors.blue[800],
