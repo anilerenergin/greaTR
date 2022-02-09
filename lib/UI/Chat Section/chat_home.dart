@@ -226,7 +226,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 padding: EdgeInsets.all(8.0 * height / 1000),
                 child: Container(
                   width: width / 1.2,
-                  height: height / 9.3,
+                  height: height / 8.5,
                   child: GestureDetector(
                     onTap: () {
                       Stream<QuerySnapshot> messageStream = FirebaseFirestore
