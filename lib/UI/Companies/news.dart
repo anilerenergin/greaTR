@@ -1,7 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:greatr/UI/Companies/%20chip.dart';
 import 'package:greatr/UI/Companies/textWidget.dart';
 
 class SingleNews extends StatefulWidget {
