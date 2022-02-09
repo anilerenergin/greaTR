@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -134,87 +136,93 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     return Stack(
       children: [
         Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Padding(
-                padding: EdgeInsets.only(top: height / 15),
-                child: Container(
-                    child: ListView.builder(
-                        itemCount: privRoomList.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () async {
-                              global.currentChatRoomId =
-                                  privRoomList[index].roomId!;
-                              Stream<QuerySnapshot> messageStream =
-                                  FirebaseFirestore.instance
-                                      .collection('messages')
-                                      .where('chatRoomId',
-                                          isEqualTo: privRoomList[index].roomId)
-                                      .orderBy('date', descending: true)
-                                      .snapshots();
+          backgroundColor: Colors.transparent,
+          body: Padding(
+            padding: EdgeInsets.only(top: height / 15),
+            child: Container(
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('private_chat_rooms')
+                        .where('participants', arrayContains: global.user.id)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return widget.user.privateChatRoomIds.length == 0
+                            ? Center(
+                                child: Text('Henüz Bir Konuşmanız Yok',
+                                    style:
+                                        Theme.of(context).textTheme.headline1),
+                              )
+                            : ListView.builder(
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (context, index) {
+                                  Map<String, dynamic> data =
+                                      snapshot.data!.docs[index].data()!
+                                          as Map<String, dynamic>;
+                                  PrivateChatRoom privRoom =
+                                      PrivateChatRoom.fromMap(data);
 
-                              var value = await Get.to(() => ChatScreen(
-                                sender:widget.user,
-                                    type: 'priv',
-                                    chatRoomId: privRoomList[index].roomId!,
-                                    title: privRoomList[index]
-                                                .participantNames[0] ==
-                                            privRoomList[index]
-                                                .participantNames[1]
-                                        ? privRoomList[index]
-                                            .participantNames[0]
-                                        : privRoomList[index]
-                                            .participantNames
-                                            .where((element) =>
-                                                element != global.user.name)
-                                            .first,
-                                    messageStream: messageStream,
-                                    user: global.user,
-                                    otherUserId: privRoomList[index]
-                                        .participants
-                                        .where((element) =>
-                                            element != global.user.id)
-                                        .first,
-                                  ));
-                              if (value) {
-                                setState(() {
-                                  global.currentChatRoomId = '';
-                                });
-                                print(global.currentChatRoomId);
-                              }
-                            },
-                            child: GFListTile(
-                                icon: Icon(FontAwesomeIcons.chevronRight),
-                                avatar: GFAvatar(
-                                    backgroundImage: privRoomList[index]
-                                                .participantImages
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      global.currentChatRoomId =
+                                          privRoom.roomId!;
+                                      Stream<QuerySnapshot> messageStream =
+                                          FirebaseFirestore.instance
+                                              .collection('messages')
+                                              .where('chatRoomId',
+                                                  isEqualTo: privRoom.roomId)
+                                              .orderBy('date', descending: true)
+                                              .snapshots();
+
+                                      var value = await Get.to(() => ChatScreen(
+                                        sender: widget.user,
+                                            type: 'priv',
+                                            chatRoomId: privRoom.roomId!,
+                                            title: privRoom
+                                                        .participantNames[0] ==
+                                                    privRoom.participantNames[1]
+                                                ? privRoom.participantNames[0]
+                                                : privRoom.participantNames
+                                                    .where((element) =>
+                                                        element !=
+                                                        global.user.name)
+                                                    .first,
+                                            messageStream: messageStream,
+                                            user: global.user,
+                                            otherUserId: privRoom.participants
                                                 .where((element) =>
-                                                    element !=
-                                                    global.user.imageUrl)
-                                                .first !=
-                                            ''
-                                        ? NetworkImage(privRoomList[index]
-                                            .participantImages
-                                            .where((element) =>
-                                                element != global.user.imageUrl)
-                                            .first!)
-                                        : NetworkImage(
-                                            'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png')),
-                                titleText: privRoomList[index]
-                                            .participantNames[0] ==
-                                        privRoomList[index].participantNames[1]
-                                    ? privRoomList[index].participantNames[0]
-                                    : privRoomList[index]
-                                        .participantNames
-                                        .where((element) =>
-                                            element != global.user.name)
-                                        .first),
-                          );
-                        })))),
+                                                    element != global.user.id)
+                                                .first,
+                                          ));
+                                      if (value) {
+                                        setState(() {
+                                          global.currentChatRoomId = '';
+                                        });
+                                        print(global.currentChatRoomId);
+                                      }
+                                    },
+                                    child: GFListTile(
+                                        icon:
+                                            Icon(FontAwesomeIcons.chevronRight),
+                                        titleText: privRoom
+                                                    .participantNames[0] ==
+                                                privRoom.participantNames[1]
+                                            ? privRoom.participantNames[0]
+                                            : privRoom.participantNames
+                                                .where((element) =>
+                                                    element != global.user.name)
+                                                .first),
+                                  );
+                                });
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    })),
+          ),
+        ),
       ],
     );
   }
-
   Widget community(double height, double width) {
     return Padding(
       padding: EdgeInsets.all(8.0 * height / 1000),
@@ -226,7 +234,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 padding: EdgeInsets.all(8.0 * height / 1000),
                 child: Container(
                   width: width / 1.2,
-                  height: height / 8.5,
+                  height: height / 8.0,
                   child: GestureDetector(
                     onTap: () {
                       Stream<QuerySnapshot> messageStream = FirebaseFirestore
@@ -236,8 +244,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                               isEqualTo: widget.rooms[index].id)
                           .orderBy('date', descending: true)
                           .snapshots();
-                      Get.to(() => ChatScreenCommunity(
-                      
+                      Get.to(() => ChatScreen(
+                        sender:widget.user,
                             type: 'community',
                             user: widget.user,
                             title: widget.rooms[index].title,
@@ -254,7 +262,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                         style: Theme.of(context)
                             .textTheme
                             .headline1!
-                            .copyWith(fontSize: width / 30),
+                            .copyWith(fontSize: width / 25),
                       ),
                       subTitleText: widget.rooms[index].location,
                       icon: GestureDetector(
@@ -267,7 +275,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                     .orderBy('date', descending: true)
                                     .snapshots();
                             Get.to(() => ChatScreenCommunity(
-                           
                                   type: 'community',
                                   user: widget.user,
                                   title: widget.rooms[index].title,
@@ -292,7 +299,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     return FloatingSearchBar(
       backdropColor: Colors.transparent,
       backgroundColor: Colors.grey.shade100,
-automaticallyImplyBackButton: false,
+
       hint: 'Kullanıcı Ara',
       scrollPadding: EdgeInsets.only(
           right: MediaQuery.of(context).size.width / 20,
@@ -320,13 +327,7 @@ automaticallyImplyBackButton: false,
               users.add(UserModel.fromMap(element.toMap()));
             });
           }
-          else if(query=="Kullanıcı Ara"){
-              setState(() {
-          users.clear();
         });
-          }
-        }
-        );
       },
       // Specify a custom transition to be used for
       // animating between opened and closed stated.
@@ -363,7 +364,7 @@ automaticallyImplyBackButton: false,
                                           .orderBy('date', descending: true)
                                           .snapshots();
                                   var value10 = await Get.to(() => ChatScreen(
-                                    sender: e,
+                                    sender:e,
                                       type: 'priv',
                                       chatRoomId: privRoom.roomId!,
                                       messageStream: messageStream,
@@ -373,8 +374,7 @@ automaticallyImplyBackButton: false,
                                           .where((element) =>
                                               element != global.user.id)
                                           .toList()
-                                          .first)
-                                          );
+                                          .first));
                                   if (value10) {
                                     setState(() {
                                       global.currentChatRoomId = '';
