@@ -662,31 +662,16 @@ class _NewRegisterState extends State<NewRegister> {
         ),
         SizedBox(width: width / 40),
         GestureDetector(
-          onTap: () {
-            showModalBottomSheet<Widget>(
-                context: context,
-                builder: (BuildContext context) {
-                  return ListView(
-                    children: [
-                      Container(
-                        child: Center(child: Text("deneme")),
-                      )
-                    ],
-                  );
-                });
+          onTap: () async {
+            final path = "images/kvkk.pdf";
+            final file = await PDFApi.loadAsset(path);
+            openPDF(context, file);
           },
-          child: GestureDetector(
-            onTap: () async {
-              final path = "images/kvkk.pdf";
-              final file = await PDFApi.loadAsset(path);
-              openPDF(context, file);
-            },
-            child: Text('Aydınlatma metnini ve KVKK sözleşmesini Onaylıyorum',
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w200,
-                    fontSize: width / 32)),
-          ),
+          child: Text('Aydınlatma metnini ve KVKK sözleşmesini Onaylıyorum',
+              style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.w200,
+                  fontSize: width / 34)),
         )
       ],
     );
