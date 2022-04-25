@@ -73,7 +73,7 @@ void main() async {
         if (globals.currentChatRoomId != '') {
           Get.back();
           Get.to(() => ChatScreen(
-            sender:globals.user,
+      
               type: 'priv',
               chatRoomId: privRoom.roomId!,
               title:
@@ -86,7 +86,7 @@ void main() async {
               user: globals.user));
         } else {
           Get.to(() => ChatScreen(
-            sender:globals.user,
+          
               type: 'priv',
               chatRoomId: privRoom.roomId!,
               title:
@@ -118,7 +118,7 @@ void main() async {
             .orderBy('date', descending: true)
             .snapshots();
         Get.to(() => ChatScreen(
-          sender:globals.user,
+         
               type: 'priv',
               chatRoomId: privRoom.roomId!,
               title:
