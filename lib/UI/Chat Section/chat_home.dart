@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:greatr/Firebase%20Functions/chat_functions.dart';
 import 'package:greatr/Firebase%20Functions/user_functions.dart';
-import 'package:greatr/UI/Chat%20Section/chat_screen_community.dart';
 import 'package:greatr/UI/Profile%20Section/profile_screen.dart';
 import 'package:greatr/models/Message.dart';
 import 'package:greatr/models/PrivateChatRoom.dart';
@@ -40,14 +37,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   late Future futureOperation;
   PageController _pageController = PageController();
   int pageIndex = 0;
-  Stream<QuerySnapshot<Object?>> firebaseStream = FirebaseFirestore.instance
-      .collection('private_chat_rooms')
-      .orderBy('lastMessage.date')
-      .snapshots();
-  List<PrivateChatRoom> privRoomList = [];
   @override
   void initState() {
-    
     widget.rooms.forEach((element) {
       if (element.title == global.user.location.city) {
         ChatRoom room = element;
@@ -55,14 +46,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         widget.rooms.insert(0, room);
       }
     });
-    firebaseStream.forEach((element) {
-      Map<String, dynamic> data =
-          element.docs.first.data() as Map<String, dynamic>;
-      privRoomList.add(PrivateChatRoom.fromMap(data));
-    });
-    firebaseStream.listen((event) {
-      if (event.docChanges.length > 0) {}
-    });
+
     super.initState();
   }
 
@@ -175,7 +159,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                               .snapshots();
 
                                       var value = await Get.to(() => ChatScreen(
-                                        sender: widget.user,
                                             type: 'priv',
                                             chatRoomId: privRoom.roomId!,
                                             title: privRoom
@@ -223,6 +206,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       ],
     );
   }
+
   Widget community(double height, double width) {
     return Padding(
       padding: EdgeInsets.all(8.0 * height / 1000),
@@ -234,17 +218,17 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 padding: EdgeInsets.all(8.0 * height / 1000),
                 child: Container(
                   width: width / 1.2,
-                  height: height / 8.0,
+                  height: height / 8,
                   child: GestureDetector(
                     onTap: () {
                       Stream<QuerySnapshot> messageStream = FirebaseFirestore
                           .instance
                           .collection('messages')
-                          
+                          .where('chatRoomId',
+                              isEqualTo: widget.rooms[index].id)
                           .orderBy('date', descending: true)
                           .snapshots();
                       Get.to(() => ChatScreen(
-                        sender:widget.user,
                             type: 'community',
                             user: widget.user,
                             title: widget.rooms[index].title,
@@ -273,7 +257,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                         isEqualTo: widget.rooms[index].id)
                                     .orderBy('date', descending: true)
                                     .snapshots();
-                            Get.to(() => ChatScreenCommunity(
+                            Get.to(() => ChatScreen(
                                   type: 'community',
                                   user: widget.user,
                                   title: widget.rooms[index].title,
@@ -321,11 +305,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             global.algolia.instance.index('name').query(query);
         AlgoliaQuerySnapshot snap = await algQuery.getObjects();
         snap.hits.forEach((element) {
-          if (users.length <= 10) {
-            setState(() {
-              users.add(UserModel.fromMap(element.toMap()));
-            });
-          }
+          setState(() {
+            users.add(UserModel.fromMap(element.toMap()));
+          });
         });
       },
       // Specify a custom transition to be used for
@@ -363,7 +345,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                           .orderBy('date', descending: true)
                                           .snapshots();
                                   var value10 = await Get.to(() => ChatScreen(
-                                    sender:e,
                                       type: 'priv',
                                       chatRoomId: privRoom.roomId!,
                                       messageStream: messageStream,

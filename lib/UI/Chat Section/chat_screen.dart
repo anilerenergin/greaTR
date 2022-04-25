@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/components/avatar/gf_avatar.dart';
 import 'package:greatr/Firebase%20Functions/chat_functions.dart';
-import 'package:greatr/UI/Profile%20Section/profile_screen.dart';
 import '../globals.dart' as global;
 import 'package:greatr/UI/Onboarding/onboarding.dart';
 import 'package:greatr/models/Message.dart';
@@ -22,11 +20,9 @@ class ChatScreen extends StatefulWidget {
   String chatRoomId;
   String title;
   String type;
-  UserModel sender;
   Stream<QuerySnapshot> messageStream;
   UserModel user;
   String? otherUserId;
-
   ChatScreen({
     Key? key,
     required this.type,
@@ -35,7 +31,6 @@ class ChatScreen extends StatefulWidget {
     required this.messageStream,
     required this.user,
     this.otherUserId,
-    required this.sender,
   }) : super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -100,21 +95,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               }
             }),
-        title: GestureDetector(
-          onTap: widget.type == "priv"
-              ? () {
-                  Get.to(ProfileScreen(
-                    user: widget.sender,
-                  ));
-                }
-              : () {},
-          child: Text(
-            widget.title,
-            style: Theme.of(context)
-                .textTheme
-                .headline1!
-                .copyWith(fontSize: width / 20),
-          ),
+        title: Text(
+          widget.title,
+          style: Theme.of(context)
+              .textTheme
+              .headline1!
+              .copyWith(fontSize: width / 20),
         ),
         actions: <Widget>[
           widget.type == 'priv'
@@ -162,6 +148,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
                             default:
                               if (snapshot.hasData) {
+                                if (lastMessage == null) {
+                                  print('aa');
+                                  Map<String, dynamic> data =
+                                      snapshot.data!.docs.last.data()!
+                                          as Map<String, dynamic>;
+                                  lastMessage = Message.fromMap(data);
+                                }
+
                                 return ListView.builder(
                                     reverse: true,
                                     padding: EdgeInsets.all(width / 20),
@@ -244,13 +238,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     Text(
                       formatDate(message.date, [
-                        mm,
-                        "-",
-                        dd,
-                        "-",
-                        yyyy,
-               
-                        "  ",
                         HH,
                         ':',
                         nn,
@@ -355,16 +342,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         Text(
                           formatDate(message.date, [
-                       mm,
-                        "-",
-                        dd,
-                        "-",
-                        yyyy,
-               
-                        "  ",
-                        HH,
-                        ':',
-                        nn,
+                            HH,
+                            ':',
+                            nn,
                           ]),
                           style: Theme.of(context)
                               .textTheme
@@ -412,17 +392,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Center(
                             child: Text('Raporla',
                                 style: Theme.of(context).textTheme.bodyText1)),
-                      )),
-                  GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                            20.0 * MediaQuery.of(context).size.height / 1000),
-                        child: Center(
-                            child: Text('İptal',
-                                style: Theme.of(context).textTheme.bodyText1)),
                       ))
                 ]);
           } else {
@@ -449,17 +418,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             20.0 * MediaQuery.of(context).size.height / 1000),
                         child: Center(
                             child: Text('Raporla',
-                                style: Theme.of(context).textTheme.bodyText1)),
-                      )),
-                  GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                            20.0 * MediaQuery.of(context).size.height / 1000),
-                        child: Center(
-                            child: Text('İptal',
                                 style: Theme.of(context).textTheme.bodyText1)),
                       ))
                 ]);
@@ -518,11 +476,6 @@ class _ChatScreenState extends State<ChatScreen> {
               await FirebaseFirestore.instance
                   .collection('messages')
                   .add(message!.toMap());
-              if (widget.type == 'priv') {
-                privateChatRoomRef
-                    .doc(widget.chatRoomId)
-                    .update({'lastMessage': message});
-              }
               textEditingController.value = TextEditingValue(text: '');
             },
           ),
