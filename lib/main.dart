@@ -58,7 +58,7 @@ void main() async {
       print(globals.currentChatRoomId !=
           event.notification.additionalData!['id']);
       Get.snackbar(event.notification.title.toString(),
-          event.notification.body.toString(), onTap: (GetBar bar) async {
+          event.notification.body.toString(), onTap: (GetSnackBar bar) async {
         var response = await privateChatRoomRef
             .doc(event.notification.additionalData!['id'])
             .get();
