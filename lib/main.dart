@@ -159,11 +159,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Greatr',
       theme: whiteTheme,
-      home:widget.logged != null
-          ? SplashScreen(
-              notificationReceived: notif,
-            )
-          : Onboarding(),
+      home:NewRegister(rooms: [],),
     );
   }
 }
