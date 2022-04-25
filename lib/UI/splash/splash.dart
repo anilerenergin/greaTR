@@ -33,6 +33,7 @@ List<Event> events = [];
 List<UserBookmark> bookmarks = [];
 List<Company> companies = [];
 List<Job> jobs = [];
+
 Future futureOperation(context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String uid = (prefs.getString('uid'))!;
@@ -40,6 +41,7 @@ Future futureOperation(context) async {
   await Future.wait([
     getUserFromFirestore(uid, users),
     getChatRooms(rooms),
+    getLocationChatRooms(rooms,),
     getAllEvents(events),
     getFeedObjects(),
     getCompanies(companies),

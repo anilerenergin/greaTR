@@ -13,6 +13,7 @@ import 'package:greatr/UI/Chat%20Section/chat_screen.dart';
 
 import 'package:greatr/UI/Onboarding/onboarding.dart';
 import 'package:greatr/UI/splash/splash.dart';
+import 'package:greatr/feed.dart';
 import 'package:greatr/models/PrivateChatRoom.dart';
 
 import 'package:intl/intl.dart';
@@ -159,11 +160,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Greatr',
       theme: whiteTheme,
-      home:widget.logged != null
-          ? SplashScreen(
-              notificationReceived: notif,
-            )
-          : Onboarding(),
+      home:FeedScreen()
     );
   }
 }

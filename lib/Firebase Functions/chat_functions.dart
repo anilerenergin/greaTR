@@ -7,8 +7,10 @@ import 'package:greatr/models/ChatRoom.dart';
 import 'package:greatr/models/Message.dart';
 import 'package:greatr/models/PrivateChatRoom.dart';
 import 'package:greatr/models/User.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/UI/globals.dart' as global;
 import 'package:http/http.dart' as http;
+
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final chatRoomRef =
@@ -25,9 +27,17 @@ final privateChatRoomRef = FirebaseFirestore.instance
 
 Future getChatRooms(List<ChatRoom> rooms) async {
   List<QueryDocumentSnapshot<ChatRoom>> chatRooms = await chatRoomRef
-      .orderBy(
-        'prior',
-      )
+     .where("type",isEqualTo: "global")
+      .get()
+      .then((snapshot) => snapshot.docs);
+
+  chatRooms.forEach((element) {
+    rooms.add(ChatRoom.fromJson(element.data().toJson()));
+  });
+}
+Future getLocationChatRooms(List<ChatRoom> rooms) async {
+  List<QueryDocumentSnapshot<ChatRoom>> chatRooms = await chatRoomRef
+     .where("title",isEqualTo:"Boston")
       .get()
       .then((snapshot) => snapshot.docs);
 

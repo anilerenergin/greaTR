@@ -42,12 +42,12 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   int pageIndex = 0;
   Stream<QuerySnapshot<Object?>> firebaseStream = FirebaseFirestore.instance
       .collection('private_chat_rooms')
-      .where('participants', arrayContains: global.user.id)
       .orderBy('lastMessage.date')
       .snapshots();
   List<PrivateChatRoom> privRoomList = [];
   @override
   void initState() {
+    
     widget.rooms.forEach((element) {
       if (element.title == global.user.location.city) {
         ChatRoom room = element;
@@ -240,8 +240,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                       Stream<QuerySnapshot> messageStream = FirebaseFirestore
                           .instance
                           .collection('messages')
-                          .where('chatRoomId',
-                              isEqualTo: widget.rooms[index].id)
+                          
                           .orderBy('date', descending: true)
                           .snapshots();
                       Get.to(() => ChatScreen(
