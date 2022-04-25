@@ -101,6 +101,7 @@ const kMessageContainerDecoration = BoxDecoration(
 );
 
 List<String> countryList = [
+  'Lüften Ülke Seçiniz',
   'Almanya',
   'Amerika Birleşik Devletleri',
   'Fransa',
@@ -112,6 +113,7 @@ List<String> countryList = [
 ];
 
 List<String> majors = [
+  "Lütfen Bölüm Seçiniz",
   "Sosyal Bilimler",
   "Sanat - Dizayn",
   "Tıp - Sağlık",
@@ -129,6 +131,7 @@ List<String> majors = [
 
 Map<String, List<String>> cityList = {
   'Amerika Birleşik Devletleri': [
+    'Şehir Seçiniz',
     'Chicago',
     'Boston',
     'New York',
@@ -138,6 +141,7 @@ Map<String, List<String>> cityList = {
     'Diğer',
   ],
   'Almanya': [
+    'Şehir Seçiniz',
     'Aachen',
     'Berlin',
     'Heidelberg',
@@ -150,6 +154,7 @@ Map<String, List<String>> cityList = {
     'Diğer',
   ],
   'İngiltere': [
+    'Şehir Seçiniz',
     'Manchester',
     'Londra',
     'Birmingham',
@@ -163,18 +168,20 @@ Map<String, List<String>> cityList = {
     'Diğer',
   ],
   "İtalya":[
+    'Şehir Seçiniz',
     "Milano",
 		"Roma",
 		"Bologna",
 		"Padova",
     'Diğer',
   ],
-  'Hollanda': ['Amsterdam', 'Rotterdam', 'Maastricht','Diğer',],
-  'Fransa': ['Paris', 'Lille', 'Strasbourg', 'Lyon', 'Montpellier', 'Toulouse','Diğer',],
-  'Kanada': ['Montreal', 'Vancouver', 'Toronto','Diğer',]
+  'Hollanda': ['Şehir Seçiniz','Amsterdam', 'Rotterdam', 'Maastricht','Diğer',],
+  'Fransa': ['Şehir Seçiniz','Paris', 'Lille', 'Strasbourg', 'Lyon', 'Montpellier', 'Toulouse','Diğer',],
+  'Kanada': ['Şehir Seçiniz','Montreal', 'Vancouver', 'Toronto','Diğer',]
 };
 Map<String, List<String>> universityList={
 "Vancouver":[
+  "Lütfen Üniversite Seçiniz",
   "University of British Columbia",
 "Simon Fraser University" ,
 "Capilano University" ,
@@ -187,6 +194,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Toronto":[
+  "Lütfen Üniversite Seçiniz",
   "University of Toronto",
 "University of Waterloo",
 "Ryerson University",
@@ -196,6 +204,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Montreal":[
+  "Lütfen Üniversite Seçiniz",
 "McGill University",
 "Concordia University",
 "HEC Montréal",
@@ -204,16 +213,19 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Roma":[
+  "Lütfen Üniversite Seçiniz",
   "Universita di Roma Sapienza",
 "Universita di Roma Tre",
 "Universita degli Studi di Roma tor Vergata",
 "Diğer"
 ],
 "Padova":[
+  "Lütfen Üniversite Seçiniz",
   "University of Padua",
   "Diğer"
 ],
 "Milano":[
+  "Lütfen Üniversite Seçiniz",
   "Universitâ Bocconi",
 "Universita Cattolica",
 "Nuova Accademia di Belle Arti",
@@ -227,6 +239,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Bologna":[
+  "Lütfen Üniversite Seçiniz",
   "Bologna Üniversitesi ",
 "Johns Hopkins Üniversitesi",
 "Accademia di Belle Arti Bologna",
@@ -234,9 +247,11 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Madrid":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Barselona":[
+  "Lütfen Üniversite Seçiniz",
  "University of Barcelona",
 "Polytechnic University of Catalonia",
 "Universitat Oberta de Catalunya",
@@ -244,22 +259,26 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Sheffield":[
+  "Lütfen Üniversite Seçiniz",
   "University of Sheffield",
 "Sheffield Hallam University",
 "The Sheffield College",
 "Diğer"
 ],
 "Oxford":[
+  "Lütfen Üniversite Seçiniz",
 "Oxford",
 "Diğer"
 ],
 "Nottingham":[
+  "Lütfen Üniversite Seçiniz",
   "University of Nottingham",
 "Nottingham Trent Unversity" ,
 "Nottingham College",
 "Diğer"
 ],
 "Manchester":[
+  "Lütfen Üniversite Seçiniz",
   "University of Manchester",
 "Salford University",
 "Manchester Metropolitan University",
@@ -268,6 +287,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Londra":[
+  "Lütfen Üniversite Seçiniz",
   "University College London",
 "London School of Economics",
 "Imperial College London",
@@ -280,20 +300,24 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Kent":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Durham":[
+  "Lütfen Üniversite Seçiniz",
   "Durham University"
   "Diğer"
 
 ],
 "Coventry":[
+  "Lütfen Üniversite Seçiniz",
   "Coventry University",
 "University of Warwick",
 "Diğer"
 
 ],
 "Birmingham":[
+  "Lütfen Üniversite Seçiniz",
  "University Of Birmingham",
 "Birmingham City University",
 "University College Birmingham",
@@ -302,6 +326,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Bath": [
+  "Lütfen Üniversite Seçiniz",
  " Bath Spa University",
 "University of Bath",
 "Bath College",
@@ -309,12 +334,14 @@ Map<String, List<String>> universityList={
 
 ],
 "Twente":[
+  "Lütfen Üniversite Seçiniz",
  " University of Twente",
 "Hogeschool Saxion",
 "Diğer"
 
 ],
 "Tilburg":[
+  "Lütfen Üniversite Seçiniz",
   "Tilburg University",
 "Fontys Hogeschool Tilburg",
 "Fontys School of Arts",
@@ -322,6 +349,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Rotterdam":[
+  "Lütfen Üniversite Seçiniz",
   "Erasmus University Rotterdam",
 "Rotterdam University of Applied Sciences (Hogeschool Rotterdam)",
 "Islamic University of Rotterdam",
@@ -331,6 +359,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Maastrich":[
+  "Lütfen Üniversite Seçiniz",
   "Maastricht University",
 "UCM (University College Maastricht)",
 "Hotel Management School",
@@ -339,12 +368,14 @@ Map<String, List<String>> universityList={
 
 ],
 "Leiden":[
+  "Lütfen Üniversite Seçiniz",
  " Leiden University",
 "Hogeschool Leiden",
 "Diğer"
 
 ],
 "Eindhoven":[
+  "Lütfen Üniversite Seçiniz",
   "Eindhoven University of Technology",
 "Fontys Eindhoven",
 "Design Academy Eindhoven",
@@ -352,6 +383,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Delft":[
+  "Lütfen Üniversite Seçiniz",
   "TU Delft",
 "Inholland University of Applied Sciences",
 "The Hague University of Applied Sciences",
@@ -359,6 +391,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Amsterdam":[
+  "Lütfen Üniversite Seçiniz",
   "University of Amsterdam",
 "Vrije Universiteit",
 "Amsterdam University College",
@@ -367,6 +400,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Touluse":[
+  "Lütfen Üniversite Seçiniz",
  "Université Toulouse I Capitole",
 "Université Toulouse II Jean Jaurès",
 "Université Toulouse III Paul Sabatier",
@@ -383,6 +417,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Strasbourg":[
+  "Lütfen Üniversite Seçiniz",
   "Université de Strasbourg ( UNISTRA )",
 "Science Po Strasbourg ",
 "Insa",
@@ -390,6 +425,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Paris":[
+  "Lütfen Üniversite Seçiniz",
 "Université Panthéon-Sorbonne - Paris 1",
 "Université Panthéon-Assas - Paris 2",
 "Université Sorbonne Nouvelle- Paris 3",
@@ -419,18 +455,22 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Los Angeles":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Rhode Islands":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Montpeiller":[
+  "Lütfen Üniversite Seçiniz",
 "Université de Montpellier",
 "Université Paul Valéry",
 "École Nationale Supérieure d'Architecture de Montpellier (ENSAM)",
 "Diğer"
 ],
 "Lyon":[
+  "Lütfen Üniversite Seçiniz",
   "Université Lumiere Lyon 2",
 "Université Jean Moulin Lyon 3",
 "Institut National des Sciences Appliquées de Lyon",
@@ -444,6 +484,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Lille":[
+  "Lütfen Üniversite Seçiniz",
 "Université Catholique de Lille",
 "Université de Lille",
 "SKEMA Business School", 
@@ -469,9 +510,11 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Bordeaux":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Washington":[
+  "Lütfen Üniversite Seçiniz",
 "Georgetown University",
 "George Washington University",
 "American University",
@@ -484,6 +527,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "New York":[
+  "Lütfen Üniversite Seçiniz",
 "New York University",
 "Columbia University",
 "The New School",
@@ -493,6 +537,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Chicago":[
+  "Lütfen Üniversite Seçiniz",
 "The University of Chicago",
 "Northwestern University",
 "Illinois Institute of Technology",
@@ -501,6 +546,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Boston":[
+  "Lütfen Üniversite Seçiniz",
 "Northeastern University",
 "Tufts University",
 "Harvard University",
@@ -543,6 +589,7 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Münih":[
+  "Lütfen Üniversite Seçiniz",
 "Technische Universität München",
 "Ludwig-Maximilians-Universität",
 "Hochschule für angewandte Wissenschaften München",
@@ -551,18 +598,23 @@ Map<String, List<String>> universityList={
 
 ],
 "Würzburg":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Schweinfurt":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Bremen":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Nürnberg":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Karlsruhe":[
+  "Lütfen Üniversite Seçiniz",
 "Duale Hochschule Baden-Württemberg Karlsruhe",
 "EC Europa Campus",
 "FernUniversität in Hagen - Regionalzentrum Karlsruhe",
@@ -578,12 +630,14 @@ Map<String, List<String>> universityList={
 "Diğer"
 ],
 "Heidelberg":[
+  "Lütfen Üniversite Seçiniz",
 "Ruprecht-Karls-Universität, Heidelberg",
 "Pädagogische Hochschule Heidelberg (Eğitim Fakültesi)",
 "Diğer"
 
 ],
 "Hamburg":[
+  "Lütfen Üniversite Seçiniz",
 "TU Hamburg",
 "Universität Hamburg",
 "Bucerius Law School",
@@ -592,9 +646,11 @@ Map<String, List<String>> universityList={
 
 ],
 "Erlangen":[
+  "Lütfen Üniversite Seçiniz",
 "Diğer"
 ],
 "Berlin":[
+  "Lütfen Üniversite Seçiniz",
 "TU Hamburg",
 "Universität Hamburg",
 "Bucerius Law School",
@@ -603,6 +659,7 @@ Map<String, List<String>> universityList={
 
 ],
 "Aachen":[
+  "Lütfen Üniversite Seçiniz",
 "RWTH Aachen",
 "FH Aachen",
 "Diğer"
