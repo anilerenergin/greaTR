@@ -7,6 +7,7 @@ import 'package:greatr/Firebase%20Functions/chat_functions.dart';
 import 'package:greatr/Firebase%20Functions/event_functions.dart';
 import 'package:greatr/Firebase%20Functions/feed_functions.dart';
 import 'package:greatr/Firebase%20Functions/job_offer_functions.dart';
+import 'package:greatr/Firebase%20Functions/post_function.dart';
 import 'package:greatr/Firebase%20Functions/user_functions.dart';
 import 'package:greatr/UI/home.dart';
 import 'package:greatr/models/ChatRoom.dart';
@@ -16,11 +17,13 @@ import 'package:greatr/models/Job.dart';
 import 'package:greatr/models/User.dart';
 import 'package:greatr/models/UserBookmarks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../models/post_model.dart';
 import '../globals.dart' as global;
 
 class SplashScreen extends StatefulWidget {
   bool notificationReceived;
-  SplashScreen({required this.notificationReceived});
+  int pageIndex;
+  SplashScreen({required this.notificationReceived,required this.pageIndex});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -33,6 +36,7 @@ List<Event> events = [];
 List<UserBookmark> bookmarks = [];
 List<Company> companies = [];
 List<Job> jobs = [];
+List<PostModel> posts = [];
 Future futureOperation(context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String uid = (prefs.getString('uid'))!;
@@ -69,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     rooms = [];
 
-    futureOperation(context).then((value) {
+    getAllPosts(posts).then((postlist) => futureOperation(context).then((value) {
       timer.cancel();
       Get.off(() => HomePage(
             notificationReceived: widget.notificationReceived,
@@ -79,8 +83,10 @@ class _SplashScreenState extends State<SplashScreen> {
             rooms: rooms,
             user: users.first,
             allUsers: allUsers,
+            posts: posts,
+            pageIndex: widget.pageIndex,
           ));
-    });
+    }));
   }
 
   @override

@@ -21,6 +21,7 @@ import 'package:greatr/models/UserBookmarks.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:translator/translator.dart';
+import '../../models/post_model.dart';
 import '../globals.dart' as global;
 
 class LoginPage extends StatefulWidget {
@@ -40,6 +41,7 @@ List<UserModel> allUsers = [];
 List<UserBookmark> bookmarks = [];
 List<Company> companies = [];
 List<Job> jobs = [];
+List<PostModel> posts = [];
 
 //VARIABLES
 class _LoginPageState extends State<LoginPage> {
@@ -77,6 +79,8 @@ class _LoginPageState extends State<LoginPage> {
                     allUsers: allUsers,
                     user: users.first,
                     rooms: rooms,
+                    posts: posts,
+                    pageIndex: 0,
                   ));
             }
           },
@@ -174,8 +178,8 @@ class _LoginPageState extends State<LoginPage> {
                           width: MediaQuery.of(context).size.width / 8,
                         ),
                         ColorFiltered(
-                          colorFilter: ColorFilter.mode(
-                              Colors.black, BlendMode.srcATop),
+                          colorFilter:
+                              ColorFilter.mode(Colors.black, BlendMode.srcATop),
                           child: Image.asset(
                             "images/evimdekipsikolog.png",
                             width: MediaQuery.of(context).size.width / 3,
@@ -230,8 +234,7 @@ class _LoginPageState extends State<LoginPage> {
       ])
           .then((value) => getBookmarks(users.first.id, bookmarks))
           .then((value) => global.bookmarks = bookmarks.first);
-      ;
-
+      
       OneSignal.shared
           .setExternalUserId(FirebaseAuth.instance.currentUser!.uid);
 

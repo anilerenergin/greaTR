@@ -24,6 +24,8 @@ class UserModel {
   int roleNumber;
   List<dynamic> privateChatRoomIds;
   List<dynamic> blockedUsers;
+  List<dynamic>? likedPosts;
+  List<dynamic>? postList;
   String? userBio;
   UserModel({
     required this.firstGraduateYear,
@@ -44,6 +46,8 @@ class UserModel {
     required this.privateChatRoomIds,
     required this.blockedUsers,
     this.userBio,
+    this.likedPosts,
+    this.postList,
   });
 
   Map<String, dynamic> toMap() {
@@ -66,31 +70,35 @@ class UserModel {
       'kvkkApproved': kvkkApproved,
       'reference': reference,
       'comingBackToTurkey': comingBackToTurkey,
+      'likedPosts': likedPosts,
+      'postList': postList,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      firstGraduateYear: map['firstGraduateYear'],
-      secondGraduateYear: map['secondGraduateYear'],
-      name: map['name'],
-      email: map['email'],
-      username: map['username'],
-      registerDate: map['registerDate'],
-      id: map['id'],
-      imageUrl: map['imageUrl'] != null ? map['imageUrl'] : null,
-      phoneNumber: map['phoneNumber'],
-      education: Education.fromMap(map['education']),
-      location: Location.fromMap(map['location']),
-      roleNumber: map['roleNumber'],
-      privateChatRoomIds: List<dynamic>.from(map['privateChatRoomIds']),
-      blockedUsers: List<dynamic>.from(map['blockedUsers']),
-      userBio: map['userBio'] != null ? map['userBio'] : null,
-      kvkkApproved: map['kvkkApproved'] != null ? map['kvkkApproved'] : true,
-      reference: map['reference'] != null ? map['reference'] : "boş",
-      comingBackToTurkey:
-          map['comingBackToTurkey'] != null ? map['comingBackToTurkey'] : true,
-    );
+        firstGraduateYear: map['firstGraduateYear'],
+        secondGraduateYear: map['secondGraduateYear'],
+        name: map['name'],
+        email: map['email'],
+        username: map['username'],
+        registerDate: map['registerDate'],
+        id: map['id'],
+        imageUrl: map['imageUrl'] != null ? map['imageUrl'] : null,
+        phoneNumber: map['phoneNumber'],
+        education: Education.fromMap(map['education']),
+        location: Location.fromMap(map['location']),
+        roleNumber: map['roleNumber'],
+        privateChatRoomIds: List<dynamic>.from(map['privateChatRoomIds']),
+        blockedUsers: List<dynamic>.from(map['blockedUsers']),
+        userBio: map['userBio'] != null ? map['userBio'] : null,
+        kvkkApproved: map['kvkkApproved'] != null ? map['kvkkApproved'] : true,
+        reference: map['reference'] != null ? map['reference'] : "boş",
+        comingBackToTurkey: map['comingBackToTurkey'] != null
+            ? map['comingBackToTurkey']
+            : true,
+        postList: map['postList'],
+        likedPosts: map['likedPosts']);
   }
 
   String toJson() => json.encode(toMap());
@@ -100,7 +108,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(firstGraduateYear: $firstGraduateYear,secondGraduateYear:$secondGraduateYear,name: $name, email: $email, username: $username, registerDate: $registerDate, id: $id, imageUrl: $imageUrl, phoneNumber: $phoneNumber, education: $education, location: $location, roleNumber: $roleNumber, privateChatRoomIds: $privateChatRoomIds, blockedUsers: $blockedUsers, userBio: $userBio,kvkkapproved:$kvkkApproved,reference:$reference,comingBackToTurkey:$comingBackToTurkey)';
+    return 'UserModel(firstGraduateYear: $firstGraduateYear,secondGraduateYear:$secondGraduateYear,name: $name, email: $email, username: $username, registerDate: $registerDate, id: $id, imageUrl: $imageUrl, phoneNumber: $phoneNumber, education: $education, location: $location, roleNumber: $roleNumber, privateChatRoomIds: $privateChatRoomIds, blockedUsers: $blockedUsers, userBio: $userBio,kvkkapproved:$kvkkApproved,reference:$reference,comingBackToTurkey:$comingBackToTurkey,likedPosts:$likedPosts,postList:$postList)';
   }
 
   @override
@@ -125,7 +133,9 @@ class UserModel {
         other.roleNumber == roleNumber &&
         listEquals(other.privateChatRoomIds, privateChatRoomIds) &&
         listEquals(other.blockedUsers, blockedUsers) &&
-        other.userBio == userBio;
+        other.userBio == userBio &&
+        other.likedPosts == likedPosts &&
+        other.postList == postList;
   }
 
   @override
@@ -145,7 +155,9 @@ class UserModel {
         blockedUsers.hashCode ^
         userBio.hashCode ^
         firstGraduateYear.hashCode ^
-        secondGraduateYear.hashCode;
+        secondGraduateYear.hashCode ^
+        likedPosts.hashCode ^
+        postList.hashCode;
   }
 
   UserModel copyWith({
@@ -167,6 +179,8 @@ class UserModel {
     bool? kvkkApproved,
     String? reference,
     bool? comingBackToTurkey,
+    List? likedPosts,
+    List? postList,
   }) {
     return UserModel(
       firstGraduateYear: firstGraduateYear ?? this.firstGraduateYear,
@@ -187,6 +201,8 @@ class UserModel {
       kvkkApproved: kvkkApproved ?? this.kvkkApproved,
       reference: reference ?? this.reference,
       comingBackToTurkey: comingBackToTurkey ?? this.comingBackToTurkey,
+      likedPosts: likedPosts ?? this.likedPosts,
+      postList: postList ?? this.postList,
     );
   }
 }

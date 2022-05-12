@@ -43,3 +43,6 @@ Future updateBio(String id, String bio) async {
   await userRef.doc(id).update({'userBio': bio});
   return;
 }
+Future addToPostList(String id,String postId)async{
+  userRef.doc(id).update({});
+}

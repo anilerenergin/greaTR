@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/getwidget.dart';
@@ -10,6 +11,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:greatr/Firebase%20Functions/bookmarks.dart';
 import 'package:greatr/Firebase%20Functions/chat_functions.dart';
 import 'package:greatr/UI/Chat%20Section/chat_screen.dart';
+import 'package:greatr/UI/feed/feedScreen.dart';
 import 'package:greatr/models/Job.dart';
 import 'package:greatr/models/PrivateChatRoom.dart';
 import 'package:line_icons/line_icons.dart';
@@ -31,7 +33,9 @@ import 'package:greatr/models/Event.dart';
 import 'package:greatr/models/Location.dart';
 import 'package:greatr/models/User.dart';
 
+import '../Firebase Functions/post_function.dart';
 import '../constants.dart';
+import '../models/post_model.dart';
 import './globals.dart' as global;
 
 String name = 'name';
@@ -48,6 +52,8 @@ class HomePage extends StatefulWidget {
   List<Company> companies;
   List<Job> jobs;
   bool notificationReceived;
+  List<PostModel> posts;
+  int pageIndex;
   HomePage(
       {Key? key,
       required this.rooms,
@@ -56,7 +62,9 @@ class HomePage extends StatefulWidget {
       required this.events,
       required this.companies,
       required this.jobs,
-      required this.notificationReceived})
+      required this.notificationReceived,
+      required this.posts,
+      required this.pageIndex})
       : super(key: key);
 
   @override
@@ -66,10 +74,20 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   bool isChecked = false;
   PanelController _panelController = PanelController();
-  int _currentIndex = 0;
   PageController _pageController = PageController();
+  List<PostModel> posts = [];
   @override
   void initState() {
+    getAllPosts(posts)
+        .then(
+      (value) => posts = value,
+    )
+        .then((value) {
+      Future.delayed(const Duration(milliseconds: 300));
+      SchedulerBinding.instance?.addPostFrameCallback((_) {
+        _pageController.jumpToPage(widget.pageIndex);
+      });
+    });
     global.user = widget.user!;
     print(widget.events);
     print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
@@ -93,10 +111,11 @@ class HomePageState extends State<HomePage> {
           physics: NeverScrollableScrollPhysics(),
           controller: _pageController,
           onPageChanged: (index) {
-            setState(() => _currentIndex = index);
+            setState(() => widget.pageIndex = index);
           },
           children: [
             HomeSection1(),
+            FeedScreen(posts: posts),
             Events(
               events: widget.events,
             ),
@@ -115,12 +134,12 @@ class HomePageState extends State<HomePage> {
       bottomNavigationBar: GNav(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           backgroundColor: Colors.white,
-          selectedIndex: _currentIndex,
+          selectedIndex: widget.pageIndex,
           rippleColor: Colors.grey,
           hoverColor: Colors.grey,
           onTabChange: (index) {
             setState(() {
-              _currentIndex = index;
+              widget.pageIndex = index;
               _pageController.jumpToPage(
                 index,
               );
@@ -143,6 +162,9 @@ class HomePageState extends State<HomePage> {
           tabs: [
             GButton(
               icon: LineIcons.home,
+            ),
+            GButton(
+              icon: FontAwesomeIcons.solidCircle,
             ),
             GButton(
               icon: FontAwesomeIcons.calendarAlt,

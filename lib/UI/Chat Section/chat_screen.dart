@@ -10,6 +10,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/components/avatar/gf_avatar.dart';
 import 'package:greatr/Firebase%20Functions/chat_functions.dart';
+import 'package:greatr/Firebase%20Functions/user_functions.dart';
+import 'package:greatr/UI/Profile%20Section/profile_screen.dart';
 import '../globals.dart' as global;
 import 'package:greatr/UI/Onboarding/onboarding.dart';
 import 'package:greatr/models/Message.dart';
@@ -255,110 +257,113 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       );
     } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  widget.type != 'priv'
-                      ? Text(message.senderName,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(
-                                  fontSize:
-                                      MediaQuery.of(context).size.width / 30))
-                      : SizedBox(
-                          height: MediaQuery.of(context).size.width / 60,
-                        ),
-                  widget.type == 'community'
-                      ? GestureDetector(
-                          onTap: () async {
-                            bool value = await reportDialog();
-                            if (value) {
-                              setState(() {
-                                widget.user.blockedUsers.add(message.senderId);
-                              });
-                              blockUser(widget.user.id, message.senderId);
-                            } else {
-                              Get.snackbar(
-                                  message.senderName, 'Kullanıcı Raporlandı',
-                                  borderColor: Colors.red,
-                                  borderWidth: 2,
-                                  snackPosition: SnackPosition.TOP);
-                            }
-                          },
-                          child: Text(
-                            'Rapor',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(
-                                    color: Colors.red,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 30,
-                                    decoration: TextDecoration.underline),
-                          ),
-                        )
-                      : SizedBox(),
-                ],
-              ),
-              Bubble(
-                margin: BubbleEdges.only(top: 10),
-                alignment: Alignment.topLeft,
-                nip: BubbleNip.leftCenter,
-                color: Color(0xFF8F9BB3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+      return GestureDetector(
+        onTap:()=>getSingleUser(widget.otherUserId!).then((value) => Get.to(ProfileScreen(user: value))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.55,
-                            minWidth: MediaQuery.of(context).size.width * 0.15,
-                          ),
-                          child: Text(
-                            message.text,
-                            textAlign: TextAlign.left,
+                    widget.type != 'priv'
+                        ? Text(message.senderName,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
                                 .copyWith(
-                                    color: Colors.white,
-                                    fontSize: 19 *
-                                        MediaQuery.of(context).size.height /
-                                        1000),
+                                    fontSize:
+                                        MediaQuery.of(context).size.width / 30))
+                        : SizedBox(
+                            height: MediaQuery.of(context).size.width / 60,
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          formatDate(message.date, [
-                            HH,
-                            ':',
-                            nn,
-                          ]),
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(color: Colors.white),
-                        ),
-                      ],
-                    )
+                    widget.type == 'community'
+                        ? GestureDetector(
+                            onTap: () async {
+                              bool value = await reportDialog();
+                              if (value) {
+                                setState(() {
+                                  widget.user.blockedUsers.add(message.senderId);
+                                });
+                                blockUser(widget.user.id, message.senderId);
+                              } else {
+                                Get.snackbar(
+                                    message.senderName, 'Kullanıcı Raporlandı',
+                                    borderColor: Colors.red,
+                                    borderWidth: 2,
+                                    snackPosition: SnackPosition.TOP);
+                              }
+                            },
+                            child: Text(
+                              'Rapor',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(
+                                      color: Colors.red,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width / 30,
+                                      decoration: TextDecoration.underline),
+                            ),
+                          )
+                        : SizedBox(),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ],
+                Bubble(
+                  margin: BubbleEdges.only(top: 10),
+                  alignment: Alignment.topLeft,
+                  nip: BubbleNip.leftCenter,
+                  color: Color(0xFF8F9BB3),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.55,
+                              minWidth: MediaQuery.of(context).size.width * 0.15,
+                            ),
+                            child: Text(
+                              message.text,
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(
+                                      color: Colors.white,
+                                      fontSize: 19 *
+                                          MediaQuery.of(context).size.height /
+                                          1000),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            formatDate(message.date, [
+                              HH,
+                              ':',
+                              nn,
+                            ]),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: Colors.white),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       );
     }
   }

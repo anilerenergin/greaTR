@@ -9,6 +9,7 @@ import 'package:greatr/Firebase%20Functions/bookmarks.dart';
 import 'package:greatr/Firebase%20Functions/event_functions.dart';
 import 'package:greatr/Firebase%20Functions/feed_functions.dart';
 import 'package:greatr/Firebase%20Functions/job_offer_functions.dart';
+import 'package:greatr/Firebase%20Functions/post_function.dart';
 import 'package:greatr/UI/Login/login-signin.dart';
 import 'package:greatr/UI/NewRegister/pdf_api.dart';
 import 'package:greatr/UI/NewRegister/pdf_view_page.dart';
@@ -26,6 +27,7 @@ import 'package:greatr/models/ChatRoom.dart';
 import 'package:greatr/models/Education.dart';
 import 'package:greatr/models/Location.dart';
 import 'package:greatr/models/User.dart';
+import '../../models/post_model.dart';
 import '../globals.dart' as global;
 import '/../constants.dart' as constant;
 
@@ -42,7 +44,7 @@ class NewRegister extends StatefulWidget {
 
 UserModel? user;
 DateTime currentYear = DateTime(DateTime.now().year);
-
+List<PostModel> posts = [];
 String name = '';
 List<Company> companies = [];
 List<Job> jobs = [];
@@ -612,6 +614,7 @@ class _NewRegisterState extends State<NewRegister> {
             getCompanies(companies),
             getJobOffers(jobs),
             getAllEvents(events),
+            getAllPosts(posts).then((value) => posts = value)
           ]).then((value) async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             OneSignal.shared
@@ -626,6 +629,8 @@ class _NewRegisterState extends State<NewRegister> {
                   rooms: widget.rooms,
                   user: user,
                   allUsers: allUsers,
+                  posts: posts,
+                  pageIndex: 0,
                 ));
           });
         },

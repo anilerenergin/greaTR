@@ -25,7 +25,7 @@ class ChatRoom {
   factory ChatRoom.fromMap(Map<String, dynamic> map) {
     return ChatRoom(
       id: map['id'],
-      title: map['title'],
+      title: map['title'] ?? "Boş",
       location: map['location'],
       imageUrl: map['imageUrl'],
     );

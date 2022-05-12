@@ -162,6 +162,7 @@ class _MyAppState extends State<MyApp> {
       home:widget.logged != null
           ? SplashScreen(
               notificationReceived: notif,
+              pageIndex:0
             )
           : Onboarding(),
     );
