@@ -602,6 +602,8 @@ class _NewRegisterState extends State<NewRegister> {
               secondGraduateYear: secondGraduateYear,
               firstGraduateYear: firstGraduateYear,
               reference: reference,
+              likedPosts:[],
+              postList:[]
               );
           UserBookmark userBookmark = UserBookmark(
               userId: FirebaseAuth.instance.currentUser!.uid, bookmarks: []);

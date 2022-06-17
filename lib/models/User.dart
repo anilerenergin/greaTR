@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:greatr/models/Education.dart';
 import 'package:greatr/models/Location.dart';
 
@@ -97,8 +95,8 @@ class UserModel {
         comingBackToTurkey: map['comingBackToTurkey'] != null
             ? map['comingBackToTurkey']
             : true,
-        postList: map['postList'],
-        likedPosts: map['likedPosts']);
+        postList: List<dynamic>.from(map['postList']),
+        likedPosts: List<dynamic>.from(map['likedPosts']));
   }
 
   String toJson() => json.encode(toMap());

@@ -32,10 +32,9 @@ class Application {
 
 bool notif = false;
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
+WidgetsFlutterBinding.ensureInitialized(); //Allows to call binary libs before runApp 
   await Firebase.initializeApp();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   String? logged =
       prefs.getString('uid') == null || prefs.getString('uid') == ''
           ? null

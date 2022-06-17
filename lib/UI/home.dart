@@ -164,7 +164,7 @@ class HomePageState extends State<HomePage> {
               icon: LineIcons.home,
             ),
             GButton(
-              icon: FontAwesomeIcons.solidCircle,
+              icon: FontAwesomeIcons.globe,
             ),
             GButton(
               icon: FontAwesomeIcons.calendarAlt,

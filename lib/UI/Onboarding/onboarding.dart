@@ -164,7 +164,7 @@ BoxDecoration(
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: pageIndex == index
-                        ? Theme.of(context).primaryColorDark
+                        ? Color.fromRGBO(144, 119, 209,1)
                         : Colors.grey.shade300),
               ),
             );
@@ -191,7 +191,7 @@ BoxDecoration(
                     height: height / 15,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(width / 30),
-                        color: Theme.of(context).primaryColorDark),
+                        color: Color.fromRGBO(144, 119, 209,1)),
                     child: Center(
                       child: Text('Şimdi Aramıza Katıl!',
                           style: Theme.of(context)

@@ -22,7 +22,7 @@ Future getUserFromFirestore(String uid, List<UserModel> users) async {
   }
 }
 
-Future getSingleUser(String userId) async {
+Future<UserModel> getSingleUser(String userId) async {
   var response = await userRef.doc(userId).get();
   UserModel user = UserModel.fromMap(response.data()!.toMap());
   return user;

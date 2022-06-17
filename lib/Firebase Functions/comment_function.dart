@@ -17,7 +17,7 @@ Future getPostComments(List<CommentModel> allComments, String postId) async {
   
 }
 
-Future addPostComment(String postId, String comment, String composer,DateTime timeStamp) async {
+Future addPostComment(String postId,String composerId, String comment, String composer,DateTime timeStamp) async {
   final commentRef = FirebaseFirestore.instance.collection('comments');
 
   var commentDataSecond = await commentRef.doc(postId).get();
@@ -25,6 +25,7 @@ Future addPostComment(String postId, String comment, String composer,DateTime ti
   var commentData = await commentRef.doc(postId).set({
     (commentDataLength + 1).toString(): {
       'composer': composer,
+      'composerId':composerId,
       'comment': comment,
       'timeStamp': timeStamp,
     },

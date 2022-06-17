@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:greatr/UI/splash/splash.dart';
-
+import 'package:greatr/UI/splash/splash_in_app.dart';
+import '../globals.dart' as global;
 import '../../Firebase Functions/add_image.dart';
 import '../../Firebase Functions/add_post_function.dart';
 import '../../Firebase Functions/post_function.dart';
 import '../../models/post_model.dart';
-
 
 class PostPublish extends StatefulWidget {
   List<PostModel> posts;
@@ -28,138 +28,181 @@ class _PostPublishState extends State<PostPublish> {
     var height = MediaQuery.of(context).size.height;
 
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
-            leading: IconButton(
-                onPressed: () {
-                  Get.off(SplashScreen(notificationReceived: false,pageIndex: 1,));
-                },
-                icon: const Icon(
-                  FontAwesomeIcons.arrowLeft,
-                  color: Colors.black,
-                )),
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: const Text(
-              "greaTR Feed",
-              style: TextStyle(color: Colors.indigoAccent),
-            )),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          leading: IconButton(
+              onPressed: () {
+                Get.off(
+                    () => SplashAlt(notificationReceived: false, pageIndex: 1));
+              },
+              icon: Icon(
+                FontAwesomeIcons.arrowLeft,
+                color: Theme.of(context).primaryColor,
+              )),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            "Gönderi Paylaş",
+            style: TextStyle(color: Theme.of(context).primaryColor),
+          ),
+          actions: [
+            IconButton(
+                onPressed: galleryImg != null
+                    ? (fieldValidator(postDesc.text.trim())
+                        ? () async {
+                            widget.posts = [];
+                            await uploadFile(galleryImg)
+                                .then((value) => loadImage(value))
+                                .then((value) => addNewPost(
+                                    global.user.name,
+                                    global.user.id,
+                                    global.user.location.country,
+                                    postDesc.text,
+                                    global.user.imageUrl ??
+                                        "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png",
+                                    value,
+                                    DateTime.now()));
+
+                            getAllPosts(widget.posts).then((value) => Get.off(
+                                () => SplashAlt(
+                                    notificationReceived: false,
+                                    pageIndex: 1)));
+                          }
+                        : () =>
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                               duration: Duration(seconds:1),
+                              content: Text("Lütfen bir şeyler yazınız"),
+                              backgroundColor: Colors.grey[800],
+                            )))
+                    : (fieldValidator(postDesc.text.trim())
+                        ? () async {
+                            widget.posts = [];
+
+                            addNewPost(
+                                global.user.name,
+                                global.user.id,
+                                global.user.location.country,
+                                postDesc.text,
+                                global.user.imageUrl ??
+                                    "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png",
+                                "",
+                                DateTime.now());
+
+                            getAllPosts(widget.posts)
+                                .then((value) => Get.off(() => SplashAlt(
+                                      notificationReceived: false,
+                                      pageIndex: 1,
+                                    )));
+                          }
+                        : () {
+                            print(postDesc.text);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              duration: Duration(seconds:1),
+                              content: Text("Lütfen bir şeyler yazın"),
+                              backgroundColor: Colors.grey[800],
+                            ));
+                          }),
+                icon: Icon(
+                  FontAwesomeIcons.check,
+                  color: Theme.of(context).primaryColor,
+                ))
+          ],
+        ),
+        body: Stack(
           children: [
-            Text(
-              "Gönderi Paylaş",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: width * 0.06),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: () =>
+                        imgFromGallery(galleryImg).then((value) => setState(() {
+                              galleryImg = value;
+                            })),
+                    child: galleryImg != null
+                        ? Image.file(
+                            galleryImg!,
+                            width: width * 0.9,
+                            height: height * 0.7,
+                          )
+                        : Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: height * 0.1,
+                            ),
+                            child: Container(
+                              width: width * 0.9,
+                              height: height * 0.5,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[400]!.withAlpha(100),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(FontAwesomeIcons.camera),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Fotoğraf Ekle",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: width * 0.035),
+                                  ),
+                                ],
+                              )),
+                            ),
+                          ),
+                  ),
+                ),
+              ],
             ),
-            GestureDetector(
-              onTap: () =>
-                  imgFromGallery(galleryImg).then((value) => setState(() {
-                        galleryImg = value;
-                      })),
-              child: galleryImg != null
-                  ? Container(
-                      child: Image.file(
-                        galleryImg!,
-                        height: MediaQuery.of(context).size.height / 5,
-                      ),
-                    )
-                  : Container(
-                      width: width * 0.3,
-                      height: height * 0.04,
-                      decoration: BoxDecoration(
-                          color: Colors.indigoAccent,
-                          borderRadius: BorderRadius.all(Radius.circular(200))),
-                      child: Center(
-                          child: Text(
-                        "+ Fotoğraf Ekle",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: width * 0.035),
-                      )),
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            Align(
+              alignment: Alignment.bottomCenter,
               child: Container(
                 width: width,
+                height: height * 0.08,
                 decoration: BoxDecoration(
-                    color: Colors.indigoAccent,
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: TextFormField(
-                    controller: postDesc,
-                    onTap: () {},
-                    decoration: const InputDecoration(
-                      hintText: "Yorum yazınız",
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                    gradient: LinearGradient(
+                        colors: [Colors.purple, Colors.indigoAccent]),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10))),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: TextFormField(
+                      controller: postDesc,
+                      onChanged: (value) {},
+                      decoration: const InputDecoration(
+                        hintText: "Açıklama yazınız",
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                        border: InputBorder.none,
                       ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                    ),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    style: TextStyle(
-                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: galleryImg != null
-                    ? (() async {
-                        widget.posts = [];
-                        await uploadFile(galleryImg)
-                            .then((value) => loadImage(value))
-                            .then((value) => addNewPost(
-                                "Anıl Eren",
-                                "İstanbul",
-                                postDesc.text,
-                                "https://media-exp1.licdn.com/dms/image/C5603AQGXeUT5orK80A/profile-displayphoto-shrink_200_200/0/1609883170432?e=1652918400&v=beta&t=UhGtUZUc5LYQsMcwJiRKjPdUCz3O2e6Ni-_tGKf14YU",
-                                value,
-                                DateTime.now()));
-                        getAllPosts(widget.posts)
-                            .then((value) => Get.off(() =>SplashScreen(notificationReceived: false,pageIndex:1)));
-                      })
-                    : (() async {
-                        widget.posts = [];
-                        await addNewPost(
-                            "Anıl Eren",
-                            "İstanbul",
-                            postDesc.text,
-                            "https://media-exp1.licdn.com/dms/image/C5603AQGXeUT5orK80A/profile-displayphoto-shrink_200_200/0/1609883170432?e=1652918400&v=beta&t=UhGtUZUc5LYQsMcwJiRKjPdUCz3O2e6Ni-_tGKf14YU",
-                            "",
-                            DateTime.now());
-
-                        getAllPosts(widget.posts)
-                            .then((value) => Get.off(() => SplashScreen(notificationReceived: false,pageIndex: 1,)));
-                      }),
-                child: Container(
-                  width: 100,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                      color: Colors.indigoAccent,
-                      borderRadius: BorderRadius.all(Radius.circular(200))),
-                  child: Center(
-                      child: Text(
-                    "Paylaş",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  )),
-                ),
-              ),
-            )
           ],
         ));
   }
+}
+
+bool fieldValidator(String value) {
+
+    return true;
+  
+
 }

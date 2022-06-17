@@ -20,13 +20,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/post_model.dart';
 import '../globals.dart' as global;
 
-class SplashScreen extends StatefulWidget {
+class SplashAlt extends StatefulWidget {
   bool notificationReceived;
   int pageIndex;
-  SplashScreen({required this.notificationReceived,required this.pageIndex});
+  SplashAlt({required this.notificationReceived,required this.pageIndex});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _SplashAltState createState() => _SplashAltState();
 }
 
 List<UserModel> users = [];
@@ -45,7 +45,6 @@ Future futureOperation(context) async {
     getUserFromFirestore(uid, users),
     getChatRooms(rooms),
     getAllEvents(events),
-    getFeedObjects(),
     getCompanies(companies),
     getJobOffers(jobs),
   ])
@@ -54,10 +53,20 @@ Future futureOperation(context) async {
   return;
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashAltState extends State<SplashAlt> {
   double opacityValue = 1;
   @override
   void initState() {
+  setState(() {
+users = [];
+rooms = [];
+allUsers = [];
+events = [];
+bookmarks = [];
+companies = [];
+jobs = [];
+posts = [];
+  });
     super.initState();
     var timer = new Timer.periodic(Duration(milliseconds: 500), (timer) {
       if (opacityValue == 1) {

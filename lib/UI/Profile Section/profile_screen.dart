@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,10 +16,14 @@ import 'package:greatr/UI/Onboarding/onboarding.dart';
 import 'package:greatr/models/Event.dart';
 import 'package:greatr/models/Job.dart';
 import 'package:like_button/like_button.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:table_calendar/table_calendar.dart';
+import '../../Firebase Functions/chat_functions.dart';
+import '../../models/PrivateChatRoom.dart';
+import '../Chat Section/chat_screen.dart';
 import '../globals.dart' as global;
 import 'package:greatr/models/User.dart';
 import 'package:greatr/utils/file_upload.dart';
@@ -81,6 +86,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 top: width / 10,
                 child: Row(
                   children: [
+
+                    widget.user.id != global.user.id?
+                    IconButton(
+                      icon: Icon(FontAwesomeIcons.solidCommentAlt,
+                          color: Colors.white),
+                      onPressed: () {
+                        checkUserPrivateChatRooms(global.user, widget.user)
+                            .then((value) async {
+                          print(value.roomId);
+                          PrivateChatRoom privRoom = value;
+                          global.currentChatRoomId = privRoom.roomId!;
+
+                          Stream<QuerySnapshot> messageStream =
+                              FirebaseFirestore.instance
+                                  .collection('messages')
+                                  .where('chatRoomId',
+                                      isEqualTo: privRoom.roomId)
+                                  .orderBy('date',descending: true)
+                                  .snapshots();
+
+                          var value10 = await Get.to(() => ChatScreen(
+                              type: 'priv',
+                              chatRoomId: privRoom.roomId!,
+                              messageStream: messageStream,
+                              title: privRoom.participantNames.last,
+                              user: global.user,
+                              otherUserId: privRoom.participants
+                                  .where((element) => element != global.user.id)
+                                  .toList()
+                                  .first));
+                          if (value10) {
+                            setState(() {
+                              global.currentChatRoomId = '';
+                            });
+                          }
+                        });
+                      },
+                    ):SizedBox.shrink(),
                     IconButton(
                       icon: Icon(FontAwesomeIcons.userAltSlash,
                           color: Colors.white),
@@ -482,7 +525,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             : Colors.grey.shade500,
                       ),
                       0),
-           
                   FirebaseAuth.instance.currentUser!.uid == widget.user.id
                       ? panelCategory(
                           context,
@@ -597,8 +639,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: InputDecoration(
                 border: InputBorder.none,
               )),
-              widget.user.education.secondField==""?
-  secondMajorStrings(context, MediaQuery.of(context).size.height, width):SizedBox.shrink(),
+          widget.user.education.secondField == ""
+              ? secondMajorStrings(
+                  context, MediaQuery.of(context).size.height, width)
+              : SizedBox.shrink(),
           Text('Kayıt Tarihi',
               style: Theme.of(context)
                   .textTheme
@@ -750,10 +794,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ));
   }
-Column secondMajorStrings(
-   BuildContext context, double height, double width){
-   if(widget.user.education.secondUniversity!=""){
- return   Column(children: [
+
+  Column secondMajorStrings(BuildContext context, double height, double width) {
+    if (widget.user.education.secondUniversity != "") {
+      return Column(
+        children: [
           Text('İkinci Üniversite',
               style: Theme.of(context)
                   .textTheme
@@ -776,16 +821,17 @@ Column secondMajorStrings(
               decoration: InputDecoration(
                 border: InputBorder.none,
               )),
-  ],);
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          SizedBox.shrink(),
+        ],
+      );
+    }
   }
-  else{
-    return Column(
-      children: [
-        SizedBox.shrink(),
-      ],
-    );
-  }
-}
+
   Padding jobBox(
       double width, double height, int index, BuildContext context, Job job) {
     return Padding(
@@ -941,4 +987,3 @@ Column secondMajorStrings(
       ? await launch(_url)
       : throw 'Could not launch $_url';
 }
-

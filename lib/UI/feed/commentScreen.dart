@@ -1,5 +1,10 @@
-import 'dart:ffi';
+import 'package:get/get.dart';
+import 'package:greatr/Firebase%20Functions/user_functions.dart';
+import 'package:greatr/UI/Profile%20Section/profile_screen.dart';
+import 'package:greatr/models/User.dart';
 
+import '../../Firebase Functions/post_function.dart';
+import '../globals.dart' as global;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,7 +12,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../Firebase Functions/comment_function.dart';
 import '../../models/comment_model.dart';
 import '../../models/post_model.dart';
-
 
 class CommentScreen extends StatefulWidget {
   String postId;
@@ -26,8 +30,6 @@ class CommentScreen extends StatefulWidget {
 class _CommentScreenState extends State<CommentScreen> {
   @override
   void initState() {
-    // TODO: implement initState
-
     super.initState();
   }
 
@@ -42,14 +44,14 @@ class _CommentScreenState extends State<CommentScreen> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           iconTheme: IconThemeData(
-            color: Colors.indigoAccent, //change your color here
+            color: Colors.purple, //change your color here
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: Text(
             "greaTR Comment",
-            style: TextStyle(color: Colors.indigoAccent),
+            style: TextStyle(color: Colors.purple),
           )),
       body: Stack(
         children: [
@@ -58,135 +60,176 @@ class _CommentScreenState extends State<CommentScreen> {
             child: ListView(
               controller: _scrollController,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: width,
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    widget.currentPost.profileImg!,
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.currentPost.composer!,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    widget.currentPost.location!,
-                                    style: TextStyle(color: Colors.grey),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ), //name photo
-                        widget.currentPost.postImg == ""
-                            ? SizedBox.shrink()
-                            : GestureDetector(
-                                onDoubleTap: () {
-                           //like unlike
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    width: width,
-                                    height: height * 0.3,
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                                widget.currentPost.postImg!),
-                                            fit: BoxFit.fill)),
-                                  ),
-                                ),
-                              ), //photo
-                        Container(
-                          child: Text(widget.currentPost.postText!),
-                        ), //post text
-                        SizedBox(
-                          height: 5,
-                        ),
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    stream: FirebaseFirestore.instance
+                        .collection('posts')
+                        .doc(widget.currentPost.postId)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List likedUsers = snapshot.data!.data()!['likedUsers'];
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                      //like unlike
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Icon(
-                                     FontAwesomeIcons.heart,
-                                      color: Colors.indigoAccent,
-                                    ),
+                                Container(
+                                  width: width,
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                            widget.currentPost.profileImg!,
+                                          ),
+                                        ),
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            widget.currentPost.composer!,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            widget.currentPost.location!,
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                          )
+                                        ],
+                                      )
+                                    ],
                                   ),
+                                ), //name photo
+                                widget.currentPost.postImg == ""
+                                    ? SizedBox.shrink()
+                                    : Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: GestureDetector(
+                                          onDoubleTap: () {
+                                            likedUsers.contains(global.user.id)
+                                                ? unLikePost(
+                                                    widget.currentPost.postId!,
+                                                    global.user.id)
+                                                : likePost(
+                                                    widget.currentPost.postId!,
+                                                    global.user.id);
+                                          },
+                                          child: Container(
+                                              width: width,
+                                              height: height * 0.3,
+                                              decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(widget
+                                                          .currentPost
+                                                          .postImg!),
+                                                      fit: BoxFit.contain))),
+                                        ),
+                                      ), //photo
+                                Container(
+                                  child: Text(widget.currentPost.postText!),
+                                ), //post text
+                                SizedBox(
+                                  height: 5,
                                 ),
-                                StreamBuilder<
-                                        DocumentSnapshot<Map<String, dynamic>>>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('posts')
-                                        .doc(widget.currentPost.postId)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        var likeCount =
-                                            snapshot.data!.data()!['likeCount'];
-                                        return Text(
-                                          likeCount.toString(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        );
-                                      } else {
-                                        return Text(
-                                          "",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        );
-                                      }
-                                    })
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            likedUsers.contains(global.user.id)
+                                                ? unLikePost(
+                                                    widget.currentPost.postId!,
+                                                    global.user.id)
+                                                : likePost(
+                                                    widget.currentPost.postId!,
+                                                    global.user.id);
+                                          },
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 8.0),
+                                            child: Icon(
+                                              likedUsers
+                                                      .contains(global.user.id)
+                                                  ? FontAwesomeIcons.solidHeart
+                                                  : FontAwesomeIcons.heart,
+                                              color: Colors.purple,
+                                            ),
+                                          ),
+                                        ),
+                                        StreamBuilder<
+                                                DocumentSnapshot<
+                                                    Map<String, dynamic>>>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('posts')
+                                                .doc(widget.currentPost.postId)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                var likeCount = snapshot.data!
+                                                    .data()!['likedUsers']
+                                                    .length;
+                                                return Text(
+                                                  likeCount.toString(),
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                );
+                                              } else {
+                                                return Text(
+                                                  "",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                );
+                                              }
+                                            })
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ],
                             ),
-                          ],
-                        ), //like comment
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: widget.commentList.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
+                          ),
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    }),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget.commentList.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () =>
+                            getSingleUser(widget.commentList[index].composerId!)
+                                .then((value) =>
+                                    Get.to(ProfileScreen(user: value))),
+                        child: ListTile(
                             title: Text(
                                 widget.commentList[index].composer!.toString(),
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.indigoAccent)),
+                                    fontSize: width * 0.05,
+                                    color: Colors.purple)),
                             subtitle: Text(
-                              widget.commentList[index].comment!.toString(),
-                              style: TextStyle(color: Colors.black),
-                            ));
-                      }),
-                ),
+                                widget.commentList[index].comment!.toString(),
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.7),
+                                ))),
+                      );
+                    }),
                 SizedBox(
                   height: height * 0.1,
                 )
@@ -197,7 +240,8 @@ class _CommentScreenState extends State<CommentScreen> {
             alignment: Alignment.bottomCenter,
             child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.indigoAccent,
+                  gradient: LinearGradient(
+                      colors: [Colors.purple, Colors.indigoAccent]),
                 ),
                 width: width,
                 height: height * 0.08,
@@ -222,14 +266,15 @@ class _CommentScreenState extends State<CommentScreen> {
                           controller: commentField,
                           decoration: const InputDecoration(
                             hintText: "Yorum yazınız",
+                            hintStyle: TextStyle(color: Colors.white),
                             enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
+                              borderSide: BorderSide(color: Colors.transparent),
                             ),
                             focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
+                              borderSide: BorderSide(color: Colors.transparent),
                             ),
                             border: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
+                              borderSide: BorderSide(color: Colors.transparent),
                             ),
                           ),
                           keyboardType: TextInputType.multiline,
@@ -241,22 +286,34 @@ class _CommentScreenState extends State<CommentScreen> {
                       )),
                     ),
                     IconButton(
-                        onPressed: () async {
-                          await addPostComment(widget.postId, commentField.text,
-                                  "Anıl Eren", DateTime.now())
-                              .then((value) => widget.commentList = [])
-                              .then((value) => getPostComments(
-                                      widget.commentList, widget.postId)
-                                  .then((value) => widget.commentList = value));
-                          setState(() {
-                            _scrollController.animateTo(
-                              _scrollController.position.maxScrollExtent,
-                              duration: Duration(seconds: 1),
-                              curve: Curves.fastOutSlowIn,
-                            );
-                          });
-                          FocusScope.of(context).unfocus();
-                        },
+                        onPressed: fieldValidator(commentField.text.trim())
+                            ? () async {
+                                await addPostComment(
+                                        widget.postId,
+                                        global.user.id,
+                                        commentField.text,
+                                        global.user.name,
+                                        DateTime.now())
+                                    .then((value) => widget.commentList = [])
+                                    .then((value) => getPostComments(
+                                            widget.commentList, widget.postId)
+                                        .then((value) =>
+                                            widget.commentList = value));
+                                setState(() {
+                                  _scrollController.animateTo(
+                                    _scrollController.position.maxScrollExtent,
+                                    duration: Duration(seconds: 1),
+                                    curve: Curves.fastOutSlowIn,
+                                  );
+                                });
+                                FocusScope.of(context).unfocus();
+                              }
+                            : () => ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  duration: Duration(seconds: 1),
+                                  content: Text("Lütfen bir şeyler yazınız"),
+                                  backgroundColor: Colors.grey[800],
+                                )),
                         icon: const Icon(
                           FontAwesomeIcons.solidPaperPlane,
                           color: Colors.white,
@@ -268,4 +325,8 @@ class _CommentScreenState extends State<CommentScreen> {
       ),
     );
   }
+}
+
+bool fieldValidator(String value) {
+  return true;
 }

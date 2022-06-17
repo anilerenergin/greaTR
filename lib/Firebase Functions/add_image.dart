@@ -11,7 +11,7 @@ Future imgFromGallery(photo) async {
 
     return photo;
   } else {
-    print('No image selected.');
+    print('No image sele+cted.');
   }
 }
 
@@ -20,7 +20,7 @@ Future uploadFile(_photo) async {
     try {
   final fileName = basename(_photo!.path);
   final destination = 'postImgs/$fileName';
-    final ref = FirebaseStorage.instance.ref(destination).child('postImgs/');
+    final ref = FirebaseStorage.instance.ref(destination);
     await ref.putFile(_photo!);
     return ref;
   } catch (e) {

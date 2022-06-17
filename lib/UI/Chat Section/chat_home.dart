@@ -108,9 +108,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         },
         children: [
           community(height, width),
-          Stack(
-            children: [single(height, width), buildFloatingSearchBar()],
-          ),
+  
+        single(height, width),//buildFloatingSearchBar()
+          
         ],
       ),
     );
@@ -121,87 +121,84 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       children: [
         Scaffold(
           backgroundColor: Colors.transparent,
-          body: Padding(
-            padding: EdgeInsets.only(top: height / 15),
-            child: Container(
-                child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('private_chat_rooms')
-                        .where('participants', arrayContains: global.user.id)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return widget.user.privateChatRoomIds.length == 0
-                            ? Center(
-                                child: Text('Henüz Bir Konuşmanız Yok',
-                                    style:
-                                        Theme.of(context).textTheme.headline1),
-                              )
-                            : ListView.builder(
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  Map<String, dynamic> data =
-                                      snapshot.data!.docs[index].data()!
-                                          as Map<String, dynamic>;
-                                  PrivateChatRoom privRoom =
-                                      PrivateChatRoom.fromMap(data);
+          body: Container(
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('private_chat_rooms')
+                      .where('participants', arrayContains: global.user.id)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return widget.user.privateChatRoomIds.length == 0
+                          ? Center(
+                              child: Text('Henüz Bir Konuşmanız Yok',
+                                  style:
+                                      Theme.of(context).textTheme.headline1),
+                            )
+                          : ListView.builder(
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                Map<String, dynamic> data =
+                                    snapshot.data!.docs[index].data()!
+                                        as Map<String, dynamic>;
+                                PrivateChatRoom privRoom =
+                                    PrivateChatRoom.fromMap(data);
 
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      global.currentChatRoomId =
-                                          privRoom.roomId!;
-                                      Stream<QuerySnapshot> messageStream =
-                                          FirebaseFirestore.instance
-                                              .collection('messages')
-                                              .where('chatRoomId',
-                                                  isEqualTo: privRoom.roomId)
-                                              .orderBy('date', descending: true)
-                                              .snapshots();
+                                return GestureDetector(
+                                  onTap: () async {
+                                    global.currentChatRoomId =
+                                        privRoom.roomId!;
+                                    Stream<QuerySnapshot> messageStream =
+                                        FirebaseFirestore.instance
+                                            .collection('messages')
+                                            .where('chatRoomId',
+                                                isEqualTo: privRoom.roomId)
+                                            .orderBy('date', descending: true)
+                                            .snapshots();
 
-                                      var value = await Get.to(() => ChatScreen(
-                                            type: 'priv',
-                                            chatRoomId: privRoom.roomId!,
-                                            title: privRoom
-                                                        .participantNames[0] ==
-                                                    privRoom.participantNames[1]
-                                                ? privRoom.participantNames[0]
-                                                : privRoom.participantNames
-                                                    .where((element) =>
-                                                        element !=
-                                                        global.user.name)
-                                                    .first,
-                                            messageStream: messageStream,
-                                            user: global.user,
-                                            otherUserId: privRoom.participants
-                                                .where((element) =>
-                                                    element != global.user.id)
-                                                .first,
-                                          ));
-                                      if (value) {
-                                        setState(() {
-                                          global.currentChatRoomId = '';
-                                        });
-                                        print(global.currentChatRoomId);
-                                      }
-                                    },
-                                    child: GFListTile(
-                                        icon:
-                                            Icon(FontAwesomeIcons.chevronRight),
-                                        titleText: privRoom
-                                                    .participantNames[0] ==
-                                                privRoom.participantNames[1]
-                                            ? privRoom.participantNames[0]
-                                            : privRoom.participantNames
-                                                .where((element) =>
-                                                    element != global.user.name)
-                                                .first),
-                                  );
-                                });
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    })),
-          ),
+                                    var value = await Get.to(() => ChatScreen(
+                                          type: 'priv',
+                                          chatRoomId: privRoom.roomId!,
+                                          title: privRoom
+                                                      .participantNames[0] ==
+                                                  privRoom.participantNames[1]
+                                              ? privRoom.participantNames[0]
+                                              : privRoom.participantNames
+                                                  .where((element) =>
+                                                      element !=
+                                                      global.user.name)
+                                                  .first,
+                                          messageStream: messageStream,
+                                          user: global.user,
+                                          otherUserId: privRoom.participants
+                                              .where((element) =>
+                                                  element != global.user.id)
+                                              .first,
+                                        ));
+                                    if (value) {
+                                      setState(() {
+                                        global.currentChatRoomId = '';
+                                      });
+                                      print(global.currentChatRoomId);
+                                    }
+                                  },
+                                  child: GFListTile(
+                                      icon:
+                                          Icon(FontAwesomeIcons.chevronRight),
+                                      titleText: privRoom
+                                                  .participantNames[0] ==
+                                              privRoom.participantNames[1]
+                                          ? privRoom.participantNames[0]
+                                          : privRoom.participantNames
+                                              .where((element) =>
+                                                  element != global.user.name)
+                                              .first),
+                                );
+                              });
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  })),
         ),
       ],
     );
@@ -218,7 +215,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 padding: EdgeInsets.all(8.0 * height / 1000),
                 child: Container(
                   width: width / 1.2,
-                  height: height / 8,
+                 
                   child: GestureDetector(
                     onTap: () {
                       Stream<QuerySnapshot> messageStream = FirebaseFirestore
@@ -344,6 +341,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                               isEqualTo: privRoom.roomId)
                                           .orderBy('date', descending: true)
                                           .snapshots();
+                                        
                                   var value10 = await Get.to(() => ChatScreen(
                                       type: 'priv',
                                       chatRoomId: privRoom.roomId!,

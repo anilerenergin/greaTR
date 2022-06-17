@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -97,12 +98,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               }
             }),
-        title: Text(
-          widget.title,
-          style: Theme.of(context)
-              .textTheme
-              .headline1!
-              .copyWith(fontSize: width / 20),
+        title: GestureDetector(
+        
+          child: Text(
+            widget.title,
+            style: Theme.of(context)
+                .textTheme
+                .headline1!
+                .copyWith(fontSize: width / 20),
+          ),
         ),
         actions: <Widget>[
           widget.type == 'priv'
@@ -150,14 +154,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
                             default:
                               if (snapshot.hasData) {
-                                if (lastMessage == null) {
-                                  print('aa');
-                                  Map<String, dynamic> data =
-                                      snapshot.data!.docs.last.data()!
-                                          as Map<String, dynamic>;
-                                  lastMessage = Message.fromMap(data);
-                                }
-
                                 return ListView.builder(
                                     reverse: true,
                                     padding: EdgeInsets.all(width / 20),
@@ -240,6 +236,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     Text(
                       formatDate(message.date, [
+                        mm,
+                        "-",
+                        dd,
+                        "-",
+                        yyyy,
+               
+                        "  ",
                         HH,
                         ':',
                         nn,
@@ -257,60 +260,64 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       );
     } else {
-      return GestureDetector(
-        onTap:()=>getSingleUser(widget.otherUserId!).then((value) => Get.to(ProfileScreen(user: value))),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    widget.type != 'priv'
-                        ? Text(message.senderName,
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  widget.type != 'priv'
+                      ? Text(message.senderName,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(
+                                  fontSize:
+                                      MediaQuery.of(context).size.width / 30))
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.width / 60,
+                        ),
+                  widget.type == 'community'
+                      ? GestureDetector(
+                          onTap: () async {
+                            bool value = await reportDialog();
+                            if (value) {
+                              setState(() {
+                                widget.user.blockedUsers.add(message.senderId);
+                              });
+                              blockUser(widget.user.id, message.senderId);
+                            } else {
+                              Get.snackbar(
+                                  message.senderName, 'Kullanıcı Raporlandı',
+                                  borderColor: Colors.red,
+                                  borderWidth: 2,
+                                  snackPosition: SnackPosition.TOP);
+                            }
+                          },
+                          child: Text(
+                            'Rapor',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
                                 .copyWith(
+                                    color: Colors.red,
                                     fontSize:
-                                        MediaQuery.of(context).size.width / 30))
-                        : SizedBox(
-                            height: MediaQuery.of(context).size.width / 60,
+                                        MediaQuery.of(context).size.width / 30,
+                                    decoration: TextDecoration.underline),
                           ),
-                    widget.type == 'community'
-                        ? GestureDetector(
-                            onTap: () async {
-                              bool value = await reportDialog();
-                              if (value) {
-                                setState(() {
-                                  widget.user.blockedUsers.add(message.senderId);
-                                });
-                                blockUser(widget.user.id, message.senderId);
-                              } else {
-                                Get.snackbar(
-                                    message.senderName, 'Kullanıcı Raporlandı',
-                                    borderColor: Colors.red,
-                                    borderWidth: 2,
-                                    snackPosition: SnackPosition.TOP);
-                              }
-                            },
-                            child: Text(
-                              'Rapor',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(
-                                      color: Colors.red,
-                                      fontSize:
-                                          MediaQuery.of(context).size.width / 30,
-                                      decoration: TextDecoration.underline),
-                            ),
-                          )
-                        : SizedBox(),
-                  ],
-                ),
-                Bubble(
+                        )
+                      : SizedBox(),
+                ],
+              ),
+              GestureDetector(
+                onTap: (){
+              getSingleUser(message.senderId).then((value) => Get.off(
+                ProfileScreen(user: value)
+              ));
+                },
+                child: Bubble(
                   margin: BubbleEdges.only(top: 10),
                   alignment: Alignment.topLeft,
                   nip: BubbleNip.leftCenter,
@@ -346,9 +353,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         children: [
                           Text(
                             formatDate(message.date, [
-                              HH,
-                              ':',
-                              nn,
+                         mm,
+                          "-",
+                          dd,
+                          "-",
+                          yyyy,
+                 
+                          "  ",
+                          HH,
+                          ':',
+                          nn,
                             ]),
                             style: Theme.of(context)
                                 .textTheme
@@ -360,10 +374,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       );
     }
   }
@@ -397,6 +411,17 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Center(
                             child: Text('Raporla',
                                 style: Theme.of(context).textTheme.bodyText1)),
+                      )),
+                  GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(
+                            20.0 * MediaQuery.of(context).size.height / 1000),
+                        child: Center(
+                            child: Text('İptal',
+                                style: Theme.of(context).textTheme.bodyText1)),
                       ))
                 ]);
           } else {
@@ -423,6 +448,17 @@ class _ChatScreenState extends State<ChatScreen> {
                             20.0 * MediaQuery.of(context).size.height / 1000),
                         child: Center(
                             child: Text('Raporla',
+                                style: Theme.of(context).textTheme.bodyText1)),
+                      )),
+                  GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(
+                            20.0 * MediaQuery.of(context).size.height / 1000),
+                        child: Center(
+                            child: Text('İptal',
                                 style: Theme.of(context).textTheme.bodyText1)),
                       ))
                 ]);
@@ -481,6 +517,11 @@ class _ChatScreenState extends State<ChatScreen> {
               await FirebaseFirestore.instance
                   .collection('messages')
                   .add(message!.toMap());
+              if (widget.type == 'priv') {
+                privateChatRoomRef
+                    .doc(widget.chatRoomId)
+                    .update({'lastMessage': message});
+              }
               textEditingController.value = TextEditingValue(text: '');
             },
           ),

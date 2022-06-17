@@ -12,6 +12,7 @@ import 'package:greatr/Firebase%20Functions/job_offer_functions.dart';
 import 'package:greatr/Firebase%20Functions/user_functions.dart';
 import 'package:greatr/UI/NewRegister/new_register.dart';
 import 'package:greatr/UI/home.dart';
+import 'package:greatr/UI/splash/splash.dart';
 import 'package:greatr/models/ChatRoom.dart';
 import 'package:greatr/models/Company.dart';
 import 'package:greatr/models/Event.dart';
@@ -71,17 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                     rooms: rooms,
                   ));
             } else {
-              Get.off(() => HomePage(
-                    notificationReceived: false,
-                    jobs: jobs,
-                    companies: companies,
-                    events: events,
-                    allUsers: allUsers,
-                    user: users.first,
-                    rooms: rooms,
-                    posts: posts,
-                    pageIndex: 0,
-                  ));
+              Get.off(() => SplashScreen(notificationReceived: false, pageIndex: 0));
             }
           },
           theme: LoginTheme(
@@ -224,16 +215,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await auth.signInWithEmailAndPassword(
           email: data.name, password: data.password);
-      Future.wait([
-        getChatRooms(rooms),
-        getAllEvents(events),
-        getUserFromFirestore(auth.currentUser!.uid, users),
-        getFeedObjects(),
-        getCompanies(companies),
-        getJobOffers(jobs)
-      ])
-          .then((value) => getBookmarks(users.first.id, bookmarks))
-          .then((value) => global.bookmarks = bookmarks.first);
+
       
       OneSignal.shared
           .setExternalUserId(FirebaseAuth.instance.currentUser!.uid);
