@@ -108,7 +108,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         },
         children: [
           community(height, width),
-  
+ 
         single(height, width),//buildFloatingSearchBar()
           
         ],

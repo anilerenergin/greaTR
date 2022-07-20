@@ -44,14 +44,14 @@ class _CommentScreenState extends State<CommentScreen> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           iconTheme: IconThemeData(
-            color: Colors.purple, //change your color here
+            color: Theme.of(context).primaryColor, //change your color here
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: Text(
-            "greaTR Comment",
-            style: TextStyle(color: Colors.purple),
+            "GreaTR",
+            style: TextStyle(color: Theme.of(context).primaryColor),
           )),
       body: Stack(
         children: [
@@ -137,12 +137,8 @@ class _CommentScreenState extends State<CommentScreen> {
                                 Container(
                                   child: Text(widget.currentPost.postText!),
                                 ), //post text
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                             
+                               
                                     Row(
                                       children: [
                                         GestureDetector(
@@ -163,7 +159,7 @@ class _CommentScreenState extends State<CommentScreen> {
                                                       .contains(global.user.id)
                                                   ? FontAwesomeIcons.solidHeart
                                                   : FontAwesomeIcons.heart,
-                                              color: Colors.purple,
+                                              color:Theme.of(context).primaryColor,
                                             ),
                                           ),
                                         ),
@@ -197,8 +193,8 @@ class _CommentScreenState extends State<CommentScreen> {
                                       ],
                                     )
                                   ],
-                                ),
-                              ],
+                                
+                              
                             ),
                           ),
                         );
@@ -222,7 +218,7 @@ class _CommentScreenState extends State<CommentScreen> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: width * 0.05,
-                                    color: Colors.purple)),
+                                    color: Theme.of(context).primaryColor)),
                             subtitle: Text(
                                 widget.commentList[index].comment!.toString(),
                                 style: TextStyle(
@@ -239,9 +235,8 @@ class _CommentScreenState extends State<CommentScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [Colors.purple, Colors.indigoAccent]),
+                decoration: BoxDecoration(
+                 color: Theme.of(context).primaryColor,
                 ),
                 width: width,
                 height: height * 0.08,

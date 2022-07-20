@@ -33,7 +33,7 @@ class _PostPublishState extends State<PostPublish> {
           leading: IconButton(
               onPressed: () {
                 Get.off(
-                    () => SplashAlt(notificationReceived: false, pageIndex: 1));
+                    () => SplashAlt(notificationReceived: false, pageIndex: 0));
               },
               icon: Icon(
                 FontAwesomeIcons.arrowLeft,
@@ -92,7 +92,7 @@ class _PostPublishState extends State<PostPublish> {
                             getAllPosts(widget.posts)
                                 .then((value) => Get.off(() => SplashAlt(
                                       notificationReceived: false,
-                                      pageIndex: 1,
+                                      pageIndex: 0,
                                     )));
                           }
                         : () {
@@ -167,8 +167,7 @@ class _PostPublishState extends State<PostPublish> {
                 width: width,
                 height: height * 0.08,
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [Colors.purple, Colors.indigoAccent]),
+                    color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10))),

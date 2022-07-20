@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).primaryColor,
         child: Stack(
           children: [
             animatorForProfileBox(height, context),
@@ -86,44 +86,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 top: width / 10,
                 child: Row(
                   children: [
+                    widget.user.id != global.user.id
+                        ? IconButton(
+                            icon: Icon(FontAwesomeIcons.solidCommentAlt,
+                                color: Colors.white),
+                            onPressed: () {
+                              checkUserPrivateChatRooms(
+                                      global.user, widget.user)
+                                  .then((value) async {
+                                print(value.roomId);
+                                PrivateChatRoom privRoom = value;
+                                global.currentChatRoomId = privRoom.roomId!;
 
-                    widget.user.id != global.user.id?
-                    IconButton(
-                      icon: Icon(FontAwesomeIcons.solidCommentAlt,
-                          color: Colors.white),
-                      onPressed: () {
-                        checkUserPrivateChatRooms(global.user, widget.user)
-                            .then((value) async {
-                          print(value.roomId);
-                          PrivateChatRoom privRoom = value;
-                          global.currentChatRoomId = privRoom.roomId!;
+                                Stream<QuerySnapshot> messageStream =
+                                    FirebaseFirestore.instance
+                                        .collection('messages')
+                                        .where('chatRoomId',
+                                            isEqualTo: privRoom.roomId)
+                                        .orderBy('date', descending: true)
+                                        .snapshots();
 
-                          Stream<QuerySnapshot> messageStream =
-                              FirebaseFirestore.instance
-                                  .collection('messages')
-                                  .where('chatRoomId',
-                                      isEqualTo: privRoom.roomId)
-                                  .orderBy('date',descending: true)
-                                  .snapshots();
-
-                          var value10 = await Get.to(() => ChatScreen(
-                              type: 'priv',
-                              chatRoomId: privRoom.roomId!,
-                              messageStream: messageStream,
-                              title: privRoom.participantNames.last,
-                              user: global.user,
-                              otherUserId: privRoom.participants
-                                  .where((element) => element != global.user.id)
-                                  .toList()
-                                  .first));
-                          if (value10) {
-                            setState(() {
-                              global.currentChatRoomId = '';
-                            });
-                          }
-                        });
-                      },
-                    ):SizedBox.shrink(),
+                                var value10 = await Get.to(() => ChatScreen(
+                                    type: 'priv',
+                                    chatRoomId: privRoom.roomId!,
+                                    messageStream: messageStream,
+                                    title: privRoom.participantNames.last,
+                                    user: global.user,
+                                    otherUserId: privRoom.participants
+                                        .where((element) =>
+                                            element != global.user.id)
+                                        .toList()
+                                        .first));
+                                if (value10) {
+                                  setState(() {
+                                    global.currentChatRoomId = '';
+                                  });
+                                }
+                              });
+                            },
+                          )
+                        : SizedBox.shrink(),
                     IconButton(
                       icon: Icon(FontAwesomeIcons.userAltSlash,
                           color: Colors.white),
@@ -288,7 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Padding(
       padding: EdgeInsets.all(height / 12),
       child: Container(
-          color: Theme.of(context).primaryColorLight,
+          color: Theme.of(context).primaryColor,
           child: AnimatedAlign(
             alignment: panelClosed ? Alignment.center : Alignment.topCenter,
             duration: Duration(milliseconds: 200),
@@ -300,6 +302,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Container infoBoxProfile(double height, BuildContext context) {
     return Container(
       height: panelClosed ? height / 2 : height / 3,
+      color: Color(0x9077d1),
       child: Column(
         children: [
           Stack(
@@ -322,94 +325,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png'),
                 ),
               ),
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    if (global.user.id == widget.user.id) {
-                      getImageFromCamera(widget.user.username,
-                              FirebaseAuth.instance.currentUser!.uid)
-                          .then((value) {
-                        setState(() {
-                          widget.user.imageUrl = value;
-                        });
-                      });
-                    }
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    width: imagePickerOpened
-                        ? MediaQuery.of(context).size.width / 8
-                        : 0,
-                    height: imagePickerOpened
-                        ? MediaQuery.of(context).size.width / 8
-                        : 0,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle),
-                    child: Padding(
-                      padding: EdgeInsets.all(3.0 * height / 1000),
-                      child: Center(
-                        child: Text(
-                          'Kamera',
-                          style:
-                              Theme.of(context).textTheme.bodyText1!.copyWith(
+              imagePickerOpened
+                  ? Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (global.user.id == widget.user.id) {
+                            getImageFromCamera(widget.user.username,
+                                    FirebaseAuth.instance.currentUser!.uid)
+                                .then((value) {
+                              setState(() {
+                                widget.user.imageUrl = value;
+                              });
+                            });
+                          }
+                        },
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          width: MediaQuery.of(context).size.width / 8,
+                          height: MediaQuery.of(context).size.width / 8,
+                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          child: Padding(
+                            padding: EdgeInsets.all(3.0 * height / 1000),
+                            child: Center(
+                                child: Icon(FontAwesomeIcons.camera,
                                     color: Colors.white,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 40,
-                                  ),
-                          textAlign: TextAlign.center,
+                                    size: MediaQuery.of(context).size.width *
+                                        0.07)),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    if (global.user.id == widget.user.id) {
-                      getImageFromGallery(widget.user.username,
-                              FirebaseAuth.instance.currentUser!.uid)
-                          .then((value) {
-                        setState(() {
-                          widget.user.imageUrl = value;
-                        });
-                      });
-                    }
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    width: imagePickerOpened
-                        ? MediaQuery.of(context).size.width / 8
-                        : 0,
-                    height: imagePickerOpened
-                        ? MediaQuery.of(context).size.width / 8
-                        : 0,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle),
-                    child: Padding(
-                      padding: EdgeInsets.all(3.0 * height / 1000),
-                      child: Center(
-                        child: Text(
-                          'Galeri',
-                          style:
-                              Theme.of(context).textTheme.bodyText1!.copyWith(
-                                    color: Colors.white,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 40,
-                                  ),
-                          textAlign: TextAlign.center,
+                    )
+                  : SizedBox.shrink(),
+              imagePickerOpened
+                  ? Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (global.user.id == widget.user.id) {
+                            getImageFromGallery(widget.user.username,
+                                    FirebaseAuth.instance.currentUser!.uid)
+                                .then((value) {
+                              setState(() {
+                                widget.user.imageUrl = value;
+                              });
+                            });
+                          }
+                        },
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          width: MediaQuery.of(context).size.width / 8,
+                          height: MediaQuery.of(context).size.width / 8,
+                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          child: Padding(
+                            padding: EdgeInsets.all(3.0 * height / 1000),
+                            child: Center(
+                              child: Icon(
+                                Icons.photo,
+                                color: Colors.white,
+                                size: MediaQuery.of(context).size.width * 0.08,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              )
+                    )
+                  : SizedBox.shrink()
             ],
           ),
           Column(

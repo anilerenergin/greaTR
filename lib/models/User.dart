@@ -23,7 +23,7 @@ class UserModel {
   List<dynamic> privateChatRoomIds;
   List<dynamic> blockedUsers;
   List<dynamic>? likedPosts;
-  List<dynamic>? postList;
+  List<dynamic> postList;
   String? userBio;
   UserModel({
     required this.firstGraduateYear,
@@ -45,7 +45,7 @@ class UserModel {
     required this.blockedUsers,
     this.userBio,
     this.likedPosts,
-    this.postList,
+    required this.postList,
   });
 
   Map<String, dynamic> toMap() {

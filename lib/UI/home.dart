@@ -75,14 +75,11 @@ class HomePageState extends State<HomePage> {
   bool isChecked = false;
   PanelController _panelController = PanelController();
   PageController _pageController = PageController();
-  List<PostModel> posts = [];
+
   @override
   void initState() {
-    getAllPosts(posts)
-        .then(
-      (value) => posts = value,
-    )
-        .then((value) {
+    getAllPosts(widget.posts).then((value) {
+      widget.posts = value;
       Future.delayed(const Duration(milliseconds: 300));
       SchedulerBinding.instance?.addPostFrameCallback((_) {
         _pageController.jumpToPage(widget.pageIndex);
@@ -92,6 +89,7 @@ class HomePageState extends State<HomePage> {
     print(widget.events);
     print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
     print(widget.notificationReceived);
+
     setState(() {
       getBookmarkObjetcs();
     });
@@ -114,8 +112,8 @@ class HomePageState extends State<HomePage> {
             setState(() => widget.pageIndex = index);
           },
           children: [
-            HomeSection1(),
-            FeedScreen(posts: posts),
+            //  HomeSection1(),
+            FeedScreen(posts: widget.posts),
             Events(
               events: widget.events,
             ),
@@ -149,7 +147,7 @@ class HomePageState extends State<HomePage> {
           duration: Duration(milliseconds: 365), // tab animation duration
 
           color: Colors.grey.shade400,
-          activeColor: Colors.purple,
+          activeColor: Theme.of(context).primaryColor,
 
           // selected icon and text color
           iconSize: 26, // tab button icon size
@@ -163,9 +161,9 @@ class HomePageState extends State<HomePage> {
             GButton(
               icon: LineIcons.home,
             ),
-            GButton(
+            /* GButton(
               icon: FontAwesomeIcons.globe,
-            ),
+            ),*/
             GButton(
               icon: FontAwesomeIcons.calendarAlt,
             ),

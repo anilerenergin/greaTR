@@ -13,20 +13,20 @@ import 'package:getwidget/components/avatar/gf_avatar.dart';
 import 'package:greatr/Firebase%20Functions/chat_functions.dart';
 import 'package:greatr/Firebase%20Functions/user_functions.dart';
 import 'package:greatr/UI/Profile%20Section/profile_screen.dart';
-import '../globals.dart' as global;
+
 import 'package:greatr/UI/Onboarding/onboarding.dart';
 import 'package:greatr/models/Message.dart';
 import 'package:greatr/models/User.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreenDemo extends StatefulWidget {
   String chatRoomId;
   String title;
   String type;
   Stream<QuerySnapshot> messageStream;
   UserModel user;
   String? otherUserId;
-  ChatScreen({
+  ChatScreenDemo({
     Key? key,
     required this.type,
     required this.chatRoomId,
@@ -36,10 +36,10 @@ class ChatScreen extends StatefulWidget {
     this.otherUserId,
   }) : super(key: key);
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatScreenDemoState createState() => _ChatScreenDemoState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenDemoState extends State<ChatScreenDemo> {
   bool lastMessageIsMine = false;
   String messageText = '';
   Message? message;
@@ -196,7 +196,13 @@ class _ChatScreenState extends State<ChatScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-           
+              widget.type != 'priv'
+                  ? Text("",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontSize: MediaQuery.of(context).size.width / 30))
+                  : SizedBox(
+                      height: MediaQuery.of(context).size.width / 60,
+                    ),
               Bubble(
                 alignment: Alignment.topLeft,
                 nip: BubbleNip.rightCenter,
@@ -284,7 +290,26 @@ class _ChatScreenState extends State<ChatScreen> {
                       : SizedBox(
                           height: MediaQuery.of(context).size.width / 60,
                         ),
-              SizedBox(),
+                  widget.type == 'community'
+                      ? GestureDetector(
+                          onTap: () async {
+                            bool value = await reportDialog();
+                            if (value) {
+                              setState(() {
+                                widget.user.blockedUsers.add(message.senderId);
+                              });
+                              blockUser(widget.user.id, message.senderId);
+                            } else {
+                              Get.snackbar(
+                                  message.senderName, 'Kullanıcı Raporlandı',
+                                  borderColor: Colors.red,
+                                  borderWidth: 2,
+                                  snackPosition: SnackPosition.TOP);
+                            }
+                          },
+                        
+                        )
+                      : SizedBox(),
                 ],
               ),
                       Row(

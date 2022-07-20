@@ -41,6 +41,7 @@ List<PostModel> posts = [];
 Future futureOperation(context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String uid = (prefs.getString('uid'))!;
+  
   await Future.wait([
     getUserFromFirestore(uid, users),
     getChatRooms(rooms),
@@ -82,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
             rooms: rooms,
             user: users.first,
             allUsers: allUsers,
-            posts: posts,
+            posts: postlist,
             pageIndex: widget.pageIndex,
           ));
     }));

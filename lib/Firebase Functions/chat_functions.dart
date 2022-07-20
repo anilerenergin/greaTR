@@ -7,6 +7,7 @@ import 'package:greatr/models/ChatRoom.dart';
 import 'package:greatr/models/Message.dart';
 import 'package:greatr/models/PrivateChatRoom.dart';
 import 'package:greatr/models/User.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/UI/globals.dart' as global;
 import 'package:http/http.dart' as http;
 
@@ -24,15 +25,31 @@ final privateChatRoomRef = FirebaseFirestore.instance
     );
 
 Future getChatRooms(List<ChatRoom> rooms) async {
-  List<QueryDocumentSnapshot<ChatRoom>> chatRooms = await chatRoomRef
-      .orderBy(
-        'prior',
-      )
-      .get()
-      .then((snapshot) => snapshot.docs);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+  String uid = (prefs.getString('uid'))!;
+  await getSingleUser(uid).then((value) async {
+    List<QueryDocumentSnapshot<ChatRoom>> globalChatRooms =
+        await chatRoomRef.where('type',isEqualTo: 'global').get().then((snapshot) => snapshot.docs);
+    List<QueryDocumentSnapshot<ChatRoom>> educationChatRooms =
+        await chatRoomRef.where('title',isEqualTo: value.education.field).get().then((snapshot) => snapshot.docs);
+    List<QueryDocumentSnapshot<ChatRoom>> locationChatRooms =
+        await chatRoomRef.where('title',isEqualTo: value.location.city).get().then((snapshot) => snapshot.docs);
 
-  chatRooms.forEach((element) {
-    rooms.add(ChatRoom.fromJson(element.data().toJson()));
+    List<QueryDocumentSnapshot<ChatRoom>> demo=
+        await chatRoomRef.where('prio',isEqualTo: '999').get().then((snapshot) => snapshot.docs);
+
+    globalChatRooms.forEach((element) {
+      rooms.add(ChatRoom.fromJson(element.data().toJson()));
+    });
+    educationChatRooms.forEach((element) {
+      rooms.add(ChatRoom.fromJson(element.data().toJson()));
+    });
+    locationChatRooms.forEach((element) {
+      rooms.add(ChatRoom.fromJson(element.data().toJson()));
+    });
+    demo.forEach((element) {
+      rooms.add(ChatRoom.fromJson(element.data().toJson()));
+    });
   });
 }
 
